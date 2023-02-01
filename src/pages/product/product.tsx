@@ -20,6 +20,7 @@ export const Product = () => {
     start: 0,
     end: 2,
   })
+  const [currentTab, setCurrentTab] = useState<'specification' | 'description'>('description');
   const [reviewsRemained, setReviewsRemained] = useState<Review[]>([]);
   const [reviewsToShow, setReviewsToShow] = useState<Review[]>([]);
   const [reviewModalVisible, setReviewModalVisible] = useState<Boolean>(false);
@@ -119,6 +120,17 @@ export const Product = () => {
     reviewModalVisible || successModalVisible ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'unset';
   }, [reviewModalVisible, successModalVisible]);
 
+  useEffect(() => {
+    function handleEscapeKey(event: KeyboardEvent) {
+      if (event.code === 'Escape') {
+        setReviewModalVisible(false);
+        setSuccessModalVisible(false);
+      }
+    }
+    document.addEventListener('keydown', handleEscapeKey)
+    return () => document.removeEventListener('keydown', handleEscapeKey)
+  }, []);
+
   if (isCameraByIdLoading) {
     return <div>LOADING</div>
   }
@@ -162,9 +174,9 @@ export const Product = () => {
                       </svg>
                     ))}
                     <p className="visually-hidden">Рейтинг: 4</p>
-                    <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>12</p>
+                    <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>{camera.reviewCount}</p>
                   </div>
-                  <p className="product__price"><span className="visually-hidden">Цена:</span>{camera.price} ₽</p>
+                  <p className="product__price"><span className="visually-hidden">Цена:</span>{camera.price.toLocaleString()} ₽</p>
                   <button className="btn btn--purple" type="button">
                     <svg width="24" height="16" aria-hidden="true">
                       <use xlinkHref="#icon-add-basket"></use>
@@ -172,30 +184,29 @@ export const Product = () => {
                   </button>
                   <div className="tabs product__tabs">
                     <div className="tabs__controls product__tabs-controls">
-                      <button className="tabs__control" type="button">Характеристики</button>
-                      <button className="tabs__control is-active" type="button">Описание</button>
+                      <button className={classNames("tabs__control", {"is-active" : currentTab === 'specification'})} type="button" onClick={() => setCurrentTab('specification')}>Характеристики</button>
+                      <button className={classNames("tabs__control", {"is-active" : currentTab === 'description'})} type="button" onClick={() => setCurrentTab('description')}>Описание</button>
                     </div>
                     <div className="tabs__content">
-                      <div className="tabs__element">
+                      <div className={classNames("tabs__element", {"is-active" : currentTab === 'specification'})}>
                         <ul className="product__tabs-list">
                           <li className="item-list"><span className="item-list__title">Артикул:</span>
-                            <p className="item-list__text"> DA4IU67AD5</p>
+                            <p className="item-list__text">{camera.vendorCode}</p>
                           </li>
                           <li className="item-list"><span className="item-list__title">Категория:</span>
-                            <p className="item-list__text">Видеокамера</p>
+                            <p className="item-list__text">{camera.category}</p>
                           </li>
                           <li className="item-list"><span className="item-list__title">Тип камеры:</span>
-                            <p className="item-list__text">Коллекционная</p>
+                            <p className="item-list__text">{camera.type}</p>
                           </li>
                           <li className="item-list"><span className="item-list__title">Уровень:</span>
-                            <p className="item-list__text">Любительский</p>
+                            <p className="item-list__text">{camera.level}</p>
                           </li>
                         </ul>
                       </div>
-                      <div className="tabs__element is-active">
+                      <div className={classNames("tabs__element", {"is-active" : currentTab === 'description'})}>
                         <div className="product__tabs-text">
-                          <p>Немецкий концерн BRW разработал видеокамеру Das Auge IV в&nbsp;начале 80-х годов, однако она до&nbsp;сих пор пользуется популярностью среди коллекционеров и&nbsp;яростных почитателей старинной техники.</p>
-                          <p>Вы&nbsp;тоже можете прикоснуться к&nbsp;волшебству аналоговой съёмки, заказав этот чудо-аппарат. Кто знает, может с&nbsp;Das Auge IV&nbsp;начнётся ваш путь к&nbsp;наградам всех престижных кинофестивалей.</p>
+                          <p>{camera.description}</p>
                         </div>
                       </div>
                     </div>

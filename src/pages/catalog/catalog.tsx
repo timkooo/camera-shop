@@ -151,6 +151,16 @@ export const Catalog = () => {
     selectedProduct ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'unset';
   }, [selectedProduct]);
 
+  useEffect(() => {
+    function handleEscapeKey(event: KeyboardEvent) {
+      if (event.code === 'Escape') {
+        setSelectedProduct(null);
+      }
+    }
+    document.addEventListener('keydown', handleEscapeKey)
+    return () => document.removeEventListener('keydown', handleEscapeKey)
+  }, []);
+
   if (areCamerasLoading) {
     return <div>LOADING</div>
   }
