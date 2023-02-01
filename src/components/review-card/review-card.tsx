@@ -15,21 +15,11 @@ export const ReviewCard: FC<ReviewCardProps> = ({review}) => {
         <time className="review-card__data" dateTime="2022-03-02">{formatDateAttribute(review.createAt)}</time>
       </div>
       <div className="rate review-card__rate">
-        <svg width="17" height="16" aria-hidden="true">
-          <use xlinkHref="#icon-full-star"></use>
-        </svg>
-        <svg width="17" height="16" aria-hidden="true">
-          <use xlinkHref="#icon-star"></use>
-        </svg>
-        <svg width="17" height="16" aria-hidden="true">
-          <use xlinkHref="#icon-star"></use>
-        </svg>
-        <svg width="17" height="16" aria-hidden="true">
-          <use xlinkHref="#icon-star"></use>
-        </svg>
-        <svg width="17" height="16" aria-hidden="true">
-          <use xlinkHref="#icon-star"></use>
-        </svg>
+        {Array.from( {length: 5} ).map((_, index) => ( 
+          <svg key={index} width="17" height="16" aria-hidden="true">
+            <use xlinkHref={index <= review.rating - 1 ? "#icon-full-star" : "#icon-star"} ></use>
+          </svg>
+        ))}
         <p className="visually-hidden">Оценка: {review.rating}</p>
       </div>
       <ul className="review-card__list">

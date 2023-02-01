@@ -8,22 +8,22 @@ import {
 
 export type InitialState = {
   cameras: Camera[];
-  doesCamerasLoading: boolean;
+  areCamerasLoading: boolean;
   camerasAmount: number;
   cameraById: Camera | null;
-  doesCameraByIdLoading: boolean;
+  isCameraByIdLoading: boolean;
   similarCameras: Camera[];
-  doesSimilarCamerasLoading: boolean;
+  areSimilarCamerasLoading: boolean;
 };
 
 const initialState: InitialState = {
   cameras: [],
-  doesCamerasLoading: false,
+  areCamerasLoading: false,
   camerasAmount: 0,
   cameraById: null,
-  doesCameraByIdLoading: false,
+  isCameraByIdLoading: false,
   similarCameras: [],
-  doesSimilarCamerasLoading: false,
+  areSimilarCamerasLoading: false,
 };
 
 export const camerasSlice = createSlice({
@@ -34,49 +34,49 @@ export const camerasSlice = createSlice({
     builder
       .addCase(loadCameras.fulfilled, (state, action) => {
         state.cameras = action.payload;
-        state.doesCamerasLoading = false;
+        state.areCamerasLoading = false;
       })
       .addCase(loadCameras.pending, (state) => {
-        state.doesCamerasLoading = true;
+        state.areCamerasLoading = true;
       })
       .addCase(loadCameras.rejected, (state) => {
         state.cameras = [];
-        state.doesCamerasLoading = false;
+        state.areCamerasLoading = false;
       })
       .addCase(loadCamerasWithParams.fulfilled, (state, action) => {
         state.cameras = action.payload.data;
         state.camerasAmount = Number(action.payload.headers['x-total-count']);
-        state.doesCamerasLoading = false;
+        state.areCamerasLoading = false;
       })
       .addCase(loadCamerasWithParams.pending, (state) => {
-        state.doesCamerasLoading = true;
+        state.areCamerasLoading = true;
       })
       .addCase(loadCamerasWithParams.rejected, (state) => {
         state.cameras = [];
         state.camerasAmount = 0;
-        state.doesCamerasLoading = false;
+        state.areCamerasLoading = false;
       })
       .addCase(loadCameraById.fulfilled, (state, action) => {
         state.cameraById = action.payload;
-        state.doesCameraByIdLoading = false;
+        state.isCameraByIdLoading = false;
       })
       .addCase(loadCameraById.pending, (state) => {
-        state.doesCameraByIdLoading = true;
+        state.isCameraByIdLoading = true;
       })
       .addCase(loadCameraById.rejected, (state) => {
         state.cameraById = null;
-        state.doesCameraByIdLoading = false;
+        state.isCameraByIdLoading = false;
       })
       .addCase(loadSimilarCameras.fulfilled, (state, action) => {
         state.similarCameras = action.payload;
-        state.doesSimilarCamerasLoading = false;
+        state.areSimilarCamerasLoading = false;
       })
       .addCase(loadSimilarCameras.pending, (state) => {
-        state.doesSimilarCamerasLoading = true;
+        state.areSimilarCamerasLoading = true;
       })
       .addCase(loadSimilarCameras.rejected, (state) => {
         state.similarCameras = [];
-        state.doesSimilarCamerasLoading = false;
+        state.areSimilarCamerasLoading = false;
       })
   },
 });

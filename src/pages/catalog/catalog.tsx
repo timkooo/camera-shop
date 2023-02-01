@@ -1,107 +1,49 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ProductCard } from '../../components/product-card/product-card';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtkHooks';
-import { loadCamerasRange, loadCamerasWithParams } from '../../store/api-actions';
-import { selectCameras, selectCamerasAmount, selectDoesCamerasLoading } from '../../store/cameras/cameras.selectors';
+import { loadCamerasWithParams } from '../../store/api-actions';
+import { selectCameras, selectCamerasAmount, selectAreCamerasLoading } from '../../store/cameras/cameras.selectors';
 import { Camera } from '../../types/camera';
-import { Filters, Filters2 } from '../../types/filters';
+import { Filters2 } from '../../types/filters';
 import classNames from 'classnames';
-import { Sorting, StringRecord, updateFilters, updateParameters, updateSorting } from '../../store/application/application.slice';
+import { Price, Sorting, updateFilters, updateParameters, updatePrice, updateSorting } from '../../store/application/application.slice';
 import { getCategoryName, getFilterName, getSortingCategory } from '../../const';
-import { selectCurrentPage, selectParameters, selectSorting } from '../../store/application/application.selectors';
+import { selectParameters, selectSorting } from '../../store/application/application.selectors';
 import { Link, useParams } from 'react-router-dom';
 import { addToBasket } from '../../store/basket/basket.slice';
 
 export const Catalog = () => {
   const { pageNumber = 1 } = useParams();
-  const doesCamerasLoading = useAppSelector(selectDoesCamerasLoading);
+  const areCamerasLoading = useAppSelector(selectAreCamerasLoading);
   const cameras = useAppSelector(selectCameras);
   const parameters = useAppSelector(selectParameters);
   const camerasAmount = useAppSelector(selectCamerasAmount);
   const [ selectedProduct, setSelectedProduct ] = useState<Camera | null>(null);
-  const dispatch = useAppDispatch();
-  const currentPage = useAppSelector(selectCurrentPage);
   const sorting = useAppSelector(selectSorting);
   const [pagesNumber, setPagesNumber] = useState<number>(1);
-  // const [ filtersFormData, setFiltersFormData ] = useState<Filters>({
-  //   id: [],
-  //   name: [],
-  //   vendorCode: [],
-  //   type: [],
-  //   category: [],
-  //   description: [],
-  //   level: [],
-  //   rating: [],
-  //   price: [],
-  //   previewImg: [],
-  //   previewImg2x: [],
-  //   previewImgWebp: [],
-  //   previewImgWebp2x: [],
-  //   reviewCount: []
-  // });
   const [ filtersFormData, setFiltersFormData ] = useState<Filters2>({});
   const [ sortingFormData, setSortingFormData ] = useState<Sorting>(sorting);
   const [ filtersList, setFiltersList ] = useState<string[]>([]);
+  const [ priceFilterData, setPriceFilterData ] = useState<Price>({});
+  const priceFromRef = useRef<HTMLInputElement>(null);
+  const priceToRef = useRef<HTMLInputElement>(null);
   const camerasLimit = 9;
+  const dispatch = useAppDispatch();
 
   const countPageNumber = () => {
     return Math.ceil(camerasAmount/camerasLimit);
-  }
+  };
 
   const productsToShow = () => {
     const start = (Number(pageNumber) - 1) * camerasLimit;
     const end = start + camerasLimit;
     const params = { ... parameters, _start : start.toString(), _end : end.toString()};
     return params;
-  }
+  };
 
   useEffect (() => {
-    console.log('EEEEEEEEEEEE');
     dispatch(updateParameters(productsToShow()));
   }, [dispatch, pageNumber]);
-
-  // function getPropertyByKey <K extends keyof Filters> (key: K, value: Filters): Filters[K] {
-  //    return value[key];
-  // }
-
-  // console.log("filters", filtersFormData);
-  // console.log("sorting", sorting);
-  // console.log("pageNumber", pageNumber);
-  // console.log("parameters", parameters);
-  // console.log("cameras", cameras);
-  // console.log("camerasAmount", camerasAmount);
-  // console.log("pagesNumber", pagesNumber);
-
-  // const handleFilterFormChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } : { name: string; value: string | number } = evt.target;
-  //   const categoryName = getCategoryName(name) as keyof Filters;
-  //   const filterName = getFilterName(name);
-  //   let data = { ...filtersFormData };
-  //   let category = [...data[categoryName]];
-  //   let list = [ ... filtersList];
-  //   if (evt.target.type === 'checkbox') {
-  //     if (evt.target.checked === true) {
-  //       category = [...category, filterName];
-  //       data[categoryName] = category;
-  //       list = [...list, name];
-  //     }
-  //     if (evt.target.checked === false) {
-  //       const index = category.indexOf(filterName);
-  //       if (index > -1) {
-  //         category.splice(index, 1);
-  //         data[categoryName] = category;
-  //       }
-  //       const index2 = list.indexOf(name as string);
-  //       console.log(index2);
-  //       if (index2 > -1) {
-  //         list.splice(index2, 1);
-  //       }
-  //     }
-  //     console.log(data);
-  //     setFiltersList(list);
-  //     setFiltersFormData(data);
-  //   }
-  // }
 
   const handleFilterFormChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } : { name: string; value: string | number } = evt.target;
@@ -115,6 +57,7 @@ export const Catalog = () => {
         list = [...list, name];
       }
       if (evt.target.checked === false) {
+        console.log("FILTER-NAME", filterName);
         data = removeFilter(categoryName, filterName);
         const index2 = list.indexOf(name as string);
         console.log(index2);
@@ -122,46 +65,71 @@ export const Catalog = () => {
           list.splice(index2, 1);
         }
       }
-      setFiltersList(list);
-      setFiltersFormData(data);
+      console.log("formData", data);
+      setFiltersList(() => list);
+      setFiltersFormData(() => data);
     }
-  }  
+  };
+
+  const handleResetFilters = () => {
+    setFiltersList(() => []);
+    setFiltersFormData(() => ({}));
+    setPriceFilterData(() => ({}));
+  };
+
+  const handleFromPriceChange = (evt: React.KeyboardEvent) => {
+    if (evt.key === 'Enter') {
+      setPriceFilterData({...priceFilterData, price_gte : Number(priceFromRef.current?.value)});
+    }
+  }
+
+  const handleToPriceChange = (evt: React.KeyboardEvent) => {
+    if (evt.key === 'Enter') {
+      setPriceFilterData({...priceFilterData, price_lte : Number(priceToRef.current?.value)});
+    }
+  }
 
   const handleAddItemToBasket = () => {
     if (selectedProduct) {
       dispatch(addToBasket(selectedProduct));
     }
     setSelectedProduct(null);
-  }
+  };
 
   const handleSortingFormChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } : { name: string; value: string } = evt.target;
     const sortingCategory = getSortingCategory(name);
     const sortingData = {... sorting, [sortingCategory] : value};
     setSortingFormData(sortingData);
-  }
+  };
 
   const isFilterChecked = (name: string) => {
     return filtersList.includes(name);
-  }
+  };
    
   const addFilter = <K extends keyof Camera>(name: K, value: Camera[K]) => {
     let filters = { ...filtersFormData } as Filters2;
     if (!filters[name]) {
       filters = { ...filtersFormData, [name]: []};
     }
-    filters[name]?.push(value);
+    (filters[name] as typeof value[]) = [...(filters[name] as typeof value[]), value]
     return filters;
   }
 
   const removeFilter = <K extends keyof Camera>(name: K, value: Camera[K]) => {
-    const filters = { ...filtersFormData } as Filters2;
-    const index = filters[name]?.indexOf(value);
-    if (index && index > -1) {
-      filters[name]?.splice(index, 1);
+    let filters = { ...filtersFormData } as Filters2;
+    let filters2 = [ ...(filters[name] as typeof value[]) ];
+    const index = filters[name]?.indexOf(value as Camera[K]);
+    if (index !== undefined && index > -1) {
+      (filters2 as typeof value[]).splice(index, 1);
+      (filters[name] as typeof value[]) = filters2;
     }
     return filters;
   } 
+
+  useEffect(() => {
+    dispatch(updatePrice(priceFilterData));
+  }, [dispatch, priceFilterData]);
 
   useEffect(() => {
     dispatch(updateSorting(sortingFormData));
@@ -177,9 +145,13 @@ export const Catalog = () => {
 
   useEffect(() => {
     dispatch(loadCamerasWithParams());
-  }, [dispatch, filtersFormData, parameters, pageNumber, sortingFormData])
+  }, [dispatch, filtersFormData, parameters, pageNumber, sortingFormData, priceFilterData])
 
-  if (doesCamerasLoading) {
+  useEffect(() => {
+    selectedProduct ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'unset';
+  }, [selectedProduct]);
+
+  if (areCamerasLoading) {
     return <div>LOADING</div>
   }
 
@@ -219,12 +191,12 @@ return (
                         <div className="catalog-filter__price-range">
                           <div className="custom-input">
                             <label>
-                              <input type="number" name="price" placeholder="от" />
+                              <input ref={priceFromRef} type="number" name="price" placeholder="от" onKeyDown={handleFromPriceChange} defaultValue={priceFilterData.price_gte} />
                             </label>
                           </div>
                           <div className="custom-input">
                             <label>
-                              <input type="number" name="priceUp" placeholder="до" />
+                              <input ref={priceToRef} type="number" name="priceUp" placeholder="до" onKeyDown={handleToPriceChange} defaultValue={priceFilterData.price_lte}/>
                             </label>
                           </div>
                         </div>
@@ -246,7 +218,7 @@ return (
                         <legend className="title title--h5">Тип камеры</legend>
                         <div className="custom-checkbox catalog-filter__item">
                           <label>
-                            <input type="checkbox" name="digital" checked/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Цифровая</span>
+                            <input type="checkbox" name="digital" checked={isFilterChecked('digital')} onChange={handleFilterFormChange}/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Цифровая</span>
                           </label>
                         </div>
                         <div className="custom-checkbox catalog-filter__item">
@@ -256,7 +228,7 @@ return (
                         </div>
                         <div className="custom-checkbox catalog-filter__item">
                           <label>
-                            <input type="checkbox" name="snapshot"/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Моментальная</span>
+                            <input type="checkbox" name="snapshot" checked={isFilterChecked('snapshot')} onChange={handleFilterFormChange}/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Моментальная</span>
                           </label>
                         </div>
                         <div className="custom-checkbox catalog-filter__item">
@@ -269,21 +241,21 @@ return (
                         <legend className="title title--h5">Уровень</legend>
                         <div className="custom-checkbox catalog-filter__item">
                           <label>
-                            <input type="checkbox" name="zero" checked/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Нулевой</span>
+                            <input type="checkbox" name="zero" checked={isFilterChecked('zero')} onChange={handleFilterFormChange}/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Нулевой</span>
                           </label>
                         </div>
                         <div className="custom-checkbox catalog-filter__item">
                           <label>
-                            <input type="checkbox" name="non-professional"/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Любительский</span>
+                            <input type="checkbox" name="nonprofessional" checked={isFilterChecked('nonprofessional')} onChange={handleFilterFormChange}/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Любительский</span>
                           </label>
                         </div>
                         <div className="custom-checkbox catalog-filter__item">
                           <label>
-                            <input type="checkbox" name="professional"/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Профессиональный</span>
+                            <input type="checkbox" name="professional" checked={isFilterChecked('professional')} onChange={handleFilterFormChange}/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Профессиональный</span>
                           </label>
                         </div>
                       </fieldset>
-                      <button className="btn catalog-filter__reset-btn" type="reset">Сбросить фильтры
+                      <button className="btn catalog-filter__reset-btn" type="reset" onClick={handleResetFilters}>Сбросить фильтры
                       </button>
                     </form>
                   </div>
@@ -346,9 +318,9 @@ return (
       </main>
 
     <div className={classNames('modal', {'is-active' : selectedProduct})}>
-      <div className="modal__wrapper">
+      <div className="modal__wrapper" onClick={() => setSelectedProduct(null)}>
         <div className="modal__overlay"></div>
-        <div className="modal__content">
+        <div className="modal__content" onClick={evt => evt.stopPropagation()}>
           <p className="title title--h4">Добавить товар в корзину</p>
           <div className="basket-item basket-item--short">
             <div className="basket-item__img">

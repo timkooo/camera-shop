@@ -19,26 +19,16 @@ return (
     </div>
     <div className="product-card__info">
       <div className="rate product-card__rate">
-        <svg width="17" height="16" aria-hidden="true">
-          <use xlinkHref="#icon-full-star"></use>
-        </svg>
-        <svg width="17" height="16" aria-hidden="true">
-          <use xlinkHref="#icon-full-star"></use>
-        </svg>
-        <svg width="17" height="16" aria-hidden="true">
-          <use xlinkHref="#icon-full-star"></use>
-        </svg>
-        <svg width="17" height="16" aria-hidden="true">
-          <use xlinkHref="#icon-star"></use>
-        </svg>
-        <svg width="17" height="16" aria-hidden="true">
-          <use xlinkHref="#icon-star"></use>
-        </svg>
+        {Array.from( {length: 5} ).map((_, index) => ( 
+          <svg key={index} width="17" height="16" aria-hidden="true">
+            <use xlinkHref={index <= product.rating - 1 ? "#icon-full-star" : "#icon-star"} ></use>
+          </svg>
+        ))}
         <p className="visually-hidden">Рейтинг: 3</p>
-        <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>23</p>
+        <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>{product.reviewCount}</p>
       </div>
       <p className="product-card__title">{product.name}</p>
-      <p className="product-card__price"><span className="visually-hidden">Цена:</span>{product.price}
+      <p className="product-card__price"><span className="visually-hidden">Цена:</span>{product.price.toLocaleString()} ₽
       </p>
     </div>
     <div className="product-card__buttons">

@@ -21,12 +21,26 @@ export enum NameSpace {
 
 const filterNames: Record<string, string> = {
   'photocamera': 'Фотоаппарат',
-  'videocamera': 'Видеокамера'
+  'videocamera': 'Видеокамера',
+  'digital': 'Цифровая',
+  'film': 'Плёночная',
+  'snapshot': 'Моментальная',
+  'collection': 'Коллекционная',
+  'zero': 'Нулевой',
+  'nonprofessional': 'Любительский',
+  'professional': 'Профессиональный',
 }
 
 const filterNamesToTypes: Record<string, string>  = {
   [filterNames.photocamera]: 'category',
-  [filterNames.videocamera]: 'category'
+  [filterNames.videocamera]: 'category',
+  [filterNames.digital]: 'type',
+  [filterNames.film]: 'type',
+  [filterNames.snapshot]: 'type',
+  [filterNames.collection]: 'type',
+  [filterNames.zero]: 'level',
+  [filterNames.nonprofessional]: 'level',
+  [filterNames.professional]: 'level',
 }
 
 const sortingNamesToCategories: Record<string, string> = {

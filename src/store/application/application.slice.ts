@@ -3,46 +3,35 @@ import { NameSpace } from '../../const';
 import { Filters, Filters2 } from '../../types/filters';
 
 export type StringRecord = {[key : string] : string};
+
 export type Sorting = { 
   _sort?: string,
   _order?: string,
 };
 
+export type Price = {
+  price_gte?: number,
+  price_lte?: number,
+};
+
 export type InitialState = {
-  // filters: Filters;
+  price: Price;
   filters: Filters2;
   sorting: Sorting;
   parameters: StringRecord;
-  currentPage: number;
 };
 
 const initialState: InitialState = {
+  price: {
+    price_gte: 6000,
+    price_lte: 8000,
+  },
   filters: {},
-  // filters: {
-  //   id: [],
-  //   name: [],
-  //   vendorCode: [],
-  //   type: [],
-  //   category: [],
-  //   description: [],
-  //   level: [],
-  //   rating: [],
-  //   price: [],
-  //   previewImg: [],
-  //   previewImg2x: [],
-  //   previewImgWebp: [],
-  //   previewImgWebp2x: [],
-  //   reviewCount: []
-  // },
   sorting: {
     _sort: 'price',
     _order: 'asc',
   },
-  parameters: {
-    _start : "9",
-    _end : "18",
-  },
-  currentPage: 1,
+  parameters: {},
 };
 
 export const applicationSlice = createSlice({
@@ -57,8 +46,11 @@ export const applicationSlice = createSlice({
     },
     updateParameters(state, action: PayloadAction<StringRecord>) {
       state.parameters = action.payload;
-    }
+    },
+    updatePrice(state, action: PayloadAction<Price>) {
+      state.price = action.payload;
+    },
   },
 });
 
-export const { updateFilters, updateParameters, updateSorting } = applicationSlice.actions;
+export const { updateFilters, updateParameters, updateSorting, updatePrice } = applicationSlice.actions;

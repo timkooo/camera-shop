@@ -5,6 +5,7 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { APIRoute, AppRoutes } from '../const';
 
 const SERVER_URL = 'https://camera-shop.accelerator.pages.academy/';
+// const SERVER_URL = 'https://camera-shop.accelefsafsdfasrator.pages.academy/';
 const TIMEOUT = 5000;
 
 export const api: AxiosInstance = axios.create({
