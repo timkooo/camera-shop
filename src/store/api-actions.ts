@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import { Camera } from '../types/camera';
 import { RootState } from '../types/store';
 import { Review, ReviewPost } from '../types/review';
+import { Promo } from '../types/promo';
 
 export const loadCameras = createAsyncThunk(
   `${NameSpace.Cameras}/loadCameras`,
@@ -62,6 +63,14 @@ export const postReview = createAsyncThunk(
   `${NameSpace.Reviews}/postReview`,
   async (review: ReviewPost) => {
     await api.post(APIRoute.Reviews, review);
+  }
+);
+
+export const loadPromo = createAsyncThunk(
+  `${NameSpace.Application}/loadPromo`,
+  async () => {
+    const { data } = await api.get<Promo>(APIRoute.Promo);
+    return data;
   }
 );
 

@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { NameSpace } from '../../const';
 import { Filters, Filters2 } from '../../types/filters';
+import { Promo } from '../../types/promo';
+import { loadPromo } from '../api-actions';
 
 export type StringRecord = {[key : string] : string};
 
@@ -19,6 +21,8 @@ export type InitialState = {
   filters: Filters2;
   sorting: Sorting;
   parameters: StringRecord;
+  promo: Promo | null;
+  isPromoLoading: boolean;
 };
 
 const initialState: InitialState = {
@@ -32,6 +36,8 @@ const initialState: InitialState = {
     _order: 'asc',
   },
   parameters: {},
+  promo: null,
+  isPromoLoading: false,
 };
 
 export const applicationSlice = createSlice({
@@ -51,6 +57,20 @@ export const applicationSlice = createSlice({
       state.price = action.payload;
     },
   },
+  extraReducers(builder) {
+    builder
+      .addCase(loadPromo.fulfilled, (state, action) => {
+        state.promo = action.payload;
+        state.isPromoLoading = false;
+      })
+      .addCase(loadPromo.pending, (state) => {
+        state.isPromoLoading = true;
+      })
+      .addCase(loadPromo.rejected, (state) => {
+        state.promo = null;
+        state.isPromoLoading = false;
+      })
+  }
 });
 
 export const { updateFilters, updateParameters, updateSorting, updatePrice } = applicationSlice.actions;

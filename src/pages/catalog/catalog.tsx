@@ -1,19 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ProductCard } from '../../components/product-card/product-card';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtkHooks';
-import { loadCamerasWithParams } from '../../store/api-actions';
+import { loadCamerasWithParams, loadPromo } from '../../store/api-actions';
 import { selectCameras, selectCamerasAmount, selectAreCamerasLoading } from '../../store/cameras/cameras.selectors';
 import { Camera } from '../../types/camera';
 import { Filters2 } from '../../types/filters';
 import classNames from 'classnames';
 import { Price, Sorting, updateFilters, updateParameters, updatePrice, updateSorting } from '../../store/application/application.slice';
-import { getCategoryName, getFilterName, getSortingCategory } from '../../const';
-import { selectParameters, selectSorting } from '../../store/application/application.selectors';
+import { AppRoutes, getCategoryName, getFilterName, getSortingCategory } from '../../const';
+import { selectParameters, selectPromo, selectSorting } from '../../store/application/application.selectors';
 import { Link, useParams } from 'react-router-dom';
 import { addToBasket } from '../../store/basket/basket.slice';
+import FocusLock from 'react-focus-lock';
+
 
 export const Catalog = () => {
   const { pageNumber = 1 } = useParams();
+  const promo = useAppSelector(selectPromo);
   const areCamerasLoading = useAppSelector(selectAreCamerasLoading);
   const cameras = useAppSelector(selectCameras);
   const parameters = useAppSelector(selectParameters);
@@ -144,8 +147,12 @@ export const Catalog = () => {
   }, [dispatch, filtersFormData]);
 
   useEffect(() => {
+    dispatch(loadPromo());
+  }, [dispatch]);
+
+  useEffect(() => {
     dispatch(loadCamerasWithParams());
-  }, [dispatch, filtersFormData, parameters, pageNumber, sortingFormData, priceFilterData])
+  }, [dispatch, filtersFormData, parameters, pageNumber, sortingFormData, priceFilterData]);
 
   useEffect(() => {
     selectedProduct ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'unset';
@@ -169,10 +176,18 @@ return (
 <React.Fragment>
      <main>
         <div className="banner">
-          <picture>
-            <source type="image/webp" srcSet="/img/content/banner-bg.webp, /img/content/banner-bg@2x.webp 2x" /><img src="/img/content/banner-bg.jpg" srcSet="/img/content/banner-bg@2x.jpg 2x" width="1280" height="280" alt="баннер" />
-          </picture>
-          <p className="banner__info"><span className="banner__message">Новинка!</span><span className="title title--h1">Cannonball&nbsp;Pro&nbsp;MX&nbsp;8i</span><span className="banner__text">Профессиональная камера от&nbsp;известного производителя</span><a className="btn" href="#">Подробнее</a></p>
+        {promo ? (
+          <>
+            <picture>
+              <source type="image/webp" srcSet={`/${promo.previewImgWebp}, /${promo.previewImgWebp2x}`} /><img src={promo.previewImg} srcSet={`${promo.previewImg2x} 2x`} width="1280" height="280" alt="баннер" />
+            </picture>
+            <p className="banner__info"><span className="banner__message">Новинка!</span><span className="title title--h1">{promo.name}</span><span className="banner__text">Профессиональная камера от&nbsp;известного производителя</span><Link className="btn" to={`${AppRoutes.Product}/${promo.id}`}>Подробнее</Link></p>
+          </>) : (<>
+            <picture>
+              <source type="image/webp" srcSet="/img/content/banner-bg.webp, /img/content/banner-bg@2x.webp 2x" /><img src="/img/content/banner-bg.jpg" srcSet="/img/content/banner-bg@2x.jpg 2x" width="1280" height="280" alt="баннер" />
+            </picture>
+            <p className="banner__info"><span className="banner__message">Could not load promo</span></p>
+          </>)}
         </div>
         <div className="page-content">
           <div className="breadcrumbs">
@@ -330,6 +345,7 @@ return (
     <div className={classNames('modal', {'is-active' : selectedProduct})}>
       <div className="modal__wrapper" onClick={() => setSelectedProduct(null)}>
         <div className="modal__overlay"></div>
+        <FocusLock>
         <div className="modal__content" onClick={evt => evt.stopPropagation()}>
           <p className="title title--h4">Добавить товар в корзину</p>
           <div className="basket-item basket-item--short">
@@ -350,6 +366,7 @@ return (
             </div>
           </div>
           <div className="modal__buttons">
+            
             <button className="btn btn--purple modal__btn modal__btn--fit-width" type="button" onClick={handleAddItemToBasket}>
               <svg width="24" height="16" aria-hidden="true">
                 <use xlinkHref="#icon-add-basket"></use>
@@ -362,6 +379,7 @@ return (
             </svg>
           </button>
         </div>
+        </FocusLock>
       </div>
     </div>
 

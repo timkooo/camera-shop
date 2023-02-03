@@ -10,6 +10,7 @@ export enum AppRoutes {
 export enum APIRoute {
   Cameras = '/cameras',
   Reviews = '/reviews',
+  Promo = '/promo',
 }
 
 export enum NameSpace {
