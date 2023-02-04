@@ -34,7 +34,7 @@ export const Basket = () => {
 
             {basket.length === 0 ? <div>Ваша корзина пуста</div> : (
             <ul className="basket__list">
-              {basket.map((item) => <BasketItem item={item}/>)}
+              {basket.map((item) => <BasketItem key={item.id} item={item}/>)}
             </ul>)}
 
             <div className="basket__summary">

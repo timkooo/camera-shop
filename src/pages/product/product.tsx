@@ -8,6 +8,7 @@ import { loadCameraById, loadReviews, loadSimilarCameras, postReview } from '../
 import { selectAreSimilarCamerasLoading, selectCameraById, selectIsCameraByIdLoading, selectSimilarCameras } from '../../store/cameras/cameras.selectors';
 import { selectReviews } from '../../store/reviews/reviews.selectors';
 import { Review, ReviewPost } from '../../types/review';
+import FocusLock from 'react-focus-lock';
 
 export const Product = () => {
   const { id } = useParams();
@@ -82,6 +83,16 @@ export const Product = () => {
     await dispatch(postReview(reviewFormData));
     dispatch(loadReviews(id));
     handleShowReviewModal();
+    if (camera) {
+      setReviewFormData({
+        userName: '',
+        advantage: '',
+        disadvantage: '',
+        review: '',
+        rating: 0,
+        cameraId: camera.id,
+      })
+    }
     handleShowSuccessModal();
   }
 
@@ -252,7 +263,7 @@ export const Product = () => {
                             <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>{camera.reviewCount}</p>
                           </div>
                           <p className="product-card__title">{camera.name}</p>
-                          <p className="product-card__price"><span className="visually-hidden">Цена:</span>{camera.price} ₽
+                          <p className="product-card__price"><span className="visually-hidden">Цена:</span>{camera.price.toLocaleString()} ₽
                           </p>
                         </div>
                         <div className="product-card__buttons">
@@ -302,6 +313,7 @@ export const Product = () => {
         <div className={classNames("modal", {"is-active" : reviewModalVisible})}>
           <div className="modal__wrapper" onClick={handleShowReviewModal}>
             <div className="modal__overlay"></div>
+            <FocusLock group="group42">
             <div className="modal__content" onClick={evt => evt.stopPropagation()}>
               <p className="title title--h4">Оставить отзыв</p>
               <div className="form-review">
@@ -377,27 +389,30 @@ export const Product = () => {
                 </svg>
               </button>
             </div>
+            </FocusLock>
           </div>
         </div>
 
         <div className={classNames("modal", "modal--narrow", {"is-active" : successModalVisible})}>
           <div className="modal__wrapper" onClick={handleShowSuccessModal}>
             <div className="modal__overlay"></div>
-            <div className="modal__content" onClick={evt => evt.stopPropagation()}>
-              <p className="title title--h4">Спасибо за отзыв</p>
-              <svg className="modal__icon" width="80" height="78" aria-hidden="true">
-                <use xlinkHref="#icon-review-success"></use>
-              </svg>
-              <div className="modal__buttons">
-                <button className="btn btn--purple modal__btn modal__btn--fit-width" type="button" onClick={handleShowSuccessModal}>Вернуться к покупкам
+            <FocusLock group="group42">
+              <div className="modal__content" onClick={evt => evt.stopPropagation()}>
+                <p className="title title--h4">Спасибо за отзыв</p>
+                <svg className="modal__icon" width="80" height="78" aria-hidden="true">
+                  <use xlinkHref="#icon-review-success"></use>
+                </svg>
+                <div className="modal__buttons">
+                  <button className="btn btn--purple modal__btn modal__btn--fit-width" type="button" onClick={handleShowSuccessModal}>Вернуться к покупкам
+                  </button>
+                </div>
+                <button className="cross-btn" type="button" aria-label="Закрыть попап" onClick={handleShowSuccessModal}>
+                  <svg width="10" height="10" aria-hidden="true">
+                    <use xlinkHref="#icon-close"></use>
+                  </svg>
                 </button>
               </div>
-              <button className="cross-btn" type="button" aria-label="Закрыть попап" onClick={handleShowSuccessModal}>
-                <svg width="10" height="10" aria-hidden="true">
-                  <use xlinkHref="#icon-close"></use>
-                </svg>
-              </button>
-            </div>
+            </FocusLock>
           </div>
         </div>
 

@@ -39,7 +39,7 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
           </svg>
         </button>
         <label className="visually-hidden" htmlFor="counter1"></label>
-        <input type="number" id="counter1" value="2" min="1" max="99" aria-label="количество товара" />
+        <input type="number" id="counter1" defaultValue="2" min="1" max="99" aria-label="количество товара" />
         <button className="btn-icon btn-icon--next" aria-label="увеличить количество товара">
           <svg width="7" height="12" aria-hidden="true">
             <use xlinkHref="#icon-arrow"></use>

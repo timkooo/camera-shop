@@ -68,7 +68,7 @@ export const Root = () => {
                 <svg width="100" height="36" aria-hidden="true">
                   <use xlinkHref="#icon-logo"></use>
                 </svg></a>
-              <nav className="main-nav header__main-nav">
+              <nav className="main-nav header__main-nav" data-testid="site-menu">
                 <ul className="main-nav__list">
                   <li className="main-nav__item"><a className="main-nav__link" href="catalog.html">Каталог</a>
                   </li>
