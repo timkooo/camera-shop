@@ -1,5 +1,6 @@
 import { datatype, internet, lorem, name, commerce, image, date } from 'faker';
 import { Camera } from '../types/camera';
+import { Promo } from '../types/promo';
 import { Review, ReviewPost } from '../types/review';
 
 export const makeFakeCamera = (id: number = 1): Camera => ({
@@ -17,19 +18,19 @@ export const makeFakeCamera = (id: number = 1): Camera => ({
   previewImgWebp: image.technics(),
   previewImgWebp2x: image.technics(),
   reviewCount: datatype.number(),
-})
+});
 
 export const makeFakeCameras = (): Camera[] =>
   new Array(5).fill(null).map((_, index) => makeFakeCamera(index + 1));
   
-export const makeFakePromo = () => ({
-  id: datatype.number({min: 1, max: 40}),
+export const makeFakePromo = (id: number = 1) => ({
+  id: id,
   name: commerce.productName(),
   previewImg: image.technics(),
   previewImg2x: image.technics(),
   previewImgWebp: image.technics(),
   previewImgWebp2x: image.technics(),
-})
+});
 
 export const makeFakeReview = (id: number = 1): Review => ({
   id: datatype.string() + id,
@@ -40,17 +41,17 @@ export const makeFakeReview = (id: number = 1): Review => ({
   rating: datatype.number({min: 1, max: 5}),
   createAt: datatype.string(),
   cameraId: id,
-})
+});
 
 export const makeFakeReviews = (): Review[] =>
   new Array(5).fill(null).map((_, index) => makeFakeReview(index));
 
 
-  export const makeFakeReviewPost = (id: number = 1): ReviewPost => ({  
+export const makeFakeReviewPost = (id: number = 1): ReviewPost => ({  
   userName: internet.userName(),
   advantage: commerce.productDescription(),
   disadvantage: commerce.productDescription(),
   review: commerce.productDescription(),
   rating: datatype.number({min: 1, max: 5}),
   cameraId: id,
-})
+});
