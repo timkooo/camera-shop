@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { ReviewCard } from '../../components/review-card/review-card';
 import { AppRoutes, REVIEWS_TO_SHOW } from '../../const';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtkHooks';
@@ -9,6 +9,7 @@ import { selectAreSimilarCamerasLoading, selectCameraById, selectIsCameraByIdLoa
 import { selectReviews } from '../../store/reviews/reviews.selectors';
 import { Review, ReviewPost } from '../../types/review';
 import FocusLock from 'react-focus-lock';
+import { useModal } from '../../hooks/useModal';
 
 export const Product = () => {
   const { id } = useParams();
@@ -24,8 +25,10 @@ export const Product = () => {
   const [currentTab, setCurrentTab] = useState<'specification' | 'description'>('description');
   const [reviewsRemained, setReviewsRemained] = useState<Review[]>([]);
   const [reviewsToShow, setReviewsToShow] = useState<Review[]>([]);
-  const [reviewModalVisible, setReviewModalVisible] = useState<Boolean>(false);
-  const [successModalVisible, setSuccessModalVisible] = useState<Boolean>(false);
+  // const [reviewModalVisible, setReviewModalVisible] = useState<Boolean>(false);
+  // const [successModalVisible, setSuccessModalVisible] = useState<Boolean>(false);
+  const [ reviewModalVisible, reviewModalToggle ] = useModal();
+  const [ successModalVisible, successModalToggle ] = useModal();
   const [reviewFormData, setReviewFormData] = useState<ReviewPost>({
     userName: '',
     advantage: '',
@@ -63,13 +66,13 @@ export const Product = () => {
     setReviewFormData({...reviewFormData, [name] : value});
   }
 
-  const handleShowReviewModal = () => {
-    setReviewModalVisible(!reviewModalVisible);
-  }
+  // const handleShowReviewModal = () => {
+  //   setReviewModalVisible(!reviewModalVisible);
+  // }
 
-  const handleShowSuccessModal = () => {
-    setSuccessModalVisible(!successModalVisible);
-  }
+  // const handleShowSuccessModal = () => {
+  //   setSuccessModalVisible(!successModalVisible);
+  // }
 
   const handleShowMoreReviews = () => {
     const remained = [...reviewsRemained];
@@ -82,7 +85,8 @@ export const Product = () => {
     evt.preventDefault();
     await dispatch(postReview(reviewFormData));
     dispatch(loadReviews(id));
-    handleShowReviewModal();
+    // handleShowReviewModal();
+    reviewModalToggle();
     if (camera) {
       setReviewFormData({
         userName: '',
@@ -93,7 +97,7 @@ export const Product = () => {
         cameraId: camera.id,
       })
     }
-    handleShowSuccessModal();
+    successModalToggle();
   }
 
   const isProductActive = (index: number) => {
@@ -127,27 +131,30 @@ export const Product = () => {
     dispatch(loadReviews(id));
   }, [dispatch, id])
 
-  useEffect(() => {
-    reviewModalVisible || successModalVisible ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'unset';
-  }, [reviewModalVisible, successModalVisible]);
+  useModal(reviewModalVisible ? true : false);
+  useModal(successModalVisible ? true : false);
+  
+  // useEffect(() => {
+  //   reviewModalVisible || successModalVisible ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'unset';
+  // }, [reviewModalVisible, successModalVisible]);
 
-  useEffect(() => {
-    function handleEscapeKey(event: KeyboardEvent) {
-      if (event.code === 'Escape') {
-        setReviewModalVisible(false);
-        setSuccessModalVisible(false);
-      }
-    }
-    document.addEventListener('keydown', handleEscapeKey)
-    return () => document.removeEventListener('keydown', handleEscapeKey)
-  }, []);
+  // useEffect(() => {
+  //   const handleEscapeKey = (event: KeyboardEvent) => {
+  //     if (event.code === 'Escape') {
+  //       setReviewModalVisible(false);
+  //       setSuccessModalVisible(false);
+  //     }
+  //   }
+  //   document.addEventListener('keydown', handleEscapeKey)
+  //   return () => document.removeEventListener('keydown', handleEscapeKey)
+  // }, []);
 
   if (isCameraByIdLoading) {
     return <div>LOADING</div>
   }
 
   return camera ? (
-    <React.Fragment>
+    <>
       <main>
         <div className="page-content">
           <div className="breadcrumbs">
@@ -294,7 +301,7 @@ export const Product = () => {
               <div className="container">
                 <div className="page-content__headed">
                   <h2 className="title title--h3">Отзывы</h2>
-                  <button className="btn" type="button" onClick={handleShowReviewModal}>Оставить свой отзыв</button>
+                  <button className="btn" type="button" onClick={reviewModalToggle}>Оставить свой отзыв</button>
                 </div>
                 <ul className="review-block__list">
 
@@ -311,9 +318,9 @@ export const Product = () => {
         </div>
 
         <div className={classNames("modal", {"is-active" : reviewModalVisible})}>
-          <div className="modal__wrapper" onClick={handleShowReviewModal}>
+          <div className="modal__wrapper" onClick={reviewModalToggle}>
             <div className="modal__overlay"></div>
-            <FocusLock group="group42">
+            <FocusLock group="focus-group">
             <div className="modal__content" onClick={evt => evt.stopPropagation()}>
               <p className="title title--h4">Оставить отзыв</p>
               <div className="form-review">
@@ -383,7 +390,7 @@ export const Product = () => {
                   <button className="btn btn--purple form-review__btn" type="submit">Отправить отзыв</button>
                 </form>
               </div>
-              <button className="cross-btn" type="button" aria-label="Закрыть попап" onClick={handleShowReviewModal}>
+              <button className="cross-btn" type="button" aria-label="Закрыть попап" onClick={reviewModalToggle}>
                 <svg width="10" height="10" aria-hidden="true">
                   <use xlinkHref="#icon-close"></use>
                 </svg>
@@ -394,19 +401,19 @@ export const Product = () => {
         </div>
 
         <div className={classNames("modal", "modal--narrow", {"is-active" : successModalVisible})}>
-          <div className="modal__wrapper" onClick={handleShowSuccessModal}>
+          <div className="modal__wrapper" onClick={successModalToggle}>
             <div className="modal__overlay"></div>
-            <FocusLock group="group42">
+            <FocusLock group="focus-group">
               <div className="modal__content" onClick={evt => evt.stopPropagation()}>
                 <p className="title title--h4">Спасибо за отзыв</p>
                 <svg className="modal__icon" width="80" height="78" aria-hidden="true">
                   <use xlinkHref="#icon-review-success"></use>
                 </svg>
                 <div className="modal__buttons">
-                  <button className="btn btn--purple modal__btn modal__btn--fit-width" type="button" onClick={handleShowSuccessModal}>Вернуться к покупкам
+                  <button className="btn btn--purple modal__btn modal__btn--fit-width" type="button" onClick={successModalToggle}>Вернуться к покупкам
                   </button>
                 </div>
-                <button className="cross-btn" type="button" aria-label="Закрыть попап" onClick={handleShowSuccessModal}>
+                <button className="cross-btn" type="button" aria-label="Закрыть попап" onClick={successModalToggle}>
                   <svg width="10" height="10" aria-hidden="true">
                     <use xlinkHref="#icon-close"></use>
                   </svg>
@@ -422,7 +429,7 @@ export const Product = () => {
           <use xlinkHref="#icon-arrow2"></use>
         </svg>
       </a>
-    </React.Fragment>
+    </>
   ) : <div><h1>Sorry no such camera found</h1>
         <Link to={AppRoutes.Main}> Back to catalog </Link>
       </div>

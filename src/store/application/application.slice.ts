@@ -1,24 +1,24 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { NameSpace } from '../../const';
-import { Filters, Filters2 } from '../../types/filters';
-import { Promo } from '../../types/promo';
-import { loadPromo } from '../api-actions';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { NameSpace } from "../../const";
+import { Filters } from "../../types/filters";
+import { Promo } from "../../types/promo";
+import { loadPromo } from "../api-actions";
 
-export type StringRecord = {[key : string] : string};
+export type StringRecord = { [key: string]: string };
 
-export type Sorting = { 
-  _sort?: string,
-  _order?: string,
+export type Sorting = {
+  _sort?: string;
+  _order?: string;
 };
 
 export type Price = {
-  price_gte?: number,
-  price_lte?: number,
+  price_gte?: number;
+  price_lte?: number;
 };
 
 export type InitialState = {
   price: Price;
-  filters: Filters2;
+  filters: Filters;
   sorting: Sorting;
   parameters: StringRecord;
   promo: Promo | null;
@@ -26,14 +26,11 @@ export type InitialState = {
 };
 
 const initialState: InitialState = {
-  price: {
-    price_gte: 6000,
-    price_lte: 8000,
-  },
+  price: {},
   filters: {},
   sorting: {
-    _sort: 'price',
-    _order: 'asc',
+    _sort: "price",
+    _order: "asc",
   },
   parameters: {},
   promo: null,
@@ -44,7 +41,7 @@ export const applicationSlice = createSlice({
   name: NameSpace.Application,
   initialState,
   reducers: {
-    updateFilters(state, action: PayloadAction<Filters2>) {
+    updateFilters(state, action: PayloadAction<Filters>) {
       state.filters = action.payload;
     },
     updateSorting(state, action: PayloadAction<Sorting>) {
@@ -69,8 +66,9 @@ export const applicationSlice = createSlice({
       .addCase(loadPromo.rejected, (state) => {
         state.promo = null;
         state.isPromoLoading = false;
-      })
-  }
+      });
+  },
 });
 
-export const { updateFilters, updateParameters, updateSorting, updatePrice } = applicationSlice.actions;
+export const { updateFilters, updateParameters, updateSorting, updatePrice } =
+  applicationSlice.actions;

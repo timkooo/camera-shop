@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Review } from '../../types/review'
-import { formatDateAttribute } from '../../utils'
+import { formatDateAttribute } from '../../utils/utils'
 
 type ReviewCardProps = {
   review: Review,
