@@ -161,14 +161,14 @@ export const Catalog = () => {
   };
 
   const removeFilter = <K extends keyof Camera>(name: K, value: Camera[K]) => {
-    const filters = { ...filtersFormData } as Filters;
-    const filters2 = [...(filters[name] as typeof value[])];
-    const index = filters[name]?.indexOf(value);
+    const filterCategories = { ...filtersFormData } as Filters;
+    const filters = [...(filterCategories[name] as typeof value[])];
+    const index = filterCategories[name]?.indexOf(value);
     if (index !== undefined && index > -1) {
-      (filters2).splice(index, 1);
-      (filters[name] as typeof value[]) = filters2;
+      (filters).splice(index, 1);
+      (filterCategories[name] as typeof value[]) = filters;
     }
-    return filters;
+    return filterCategories;
   };
 
   useEffect(() => {
