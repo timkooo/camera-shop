@@ -21,11 +21,11 @@ export const routesConfig = [
         element: <Catalog />,
       },
       {
-        path: AppRoutes.Catalog + '/page/:pageNumber',
+        path: `${AppRoutes.Catalog}/page/:pageNumber`,
         element: <Catalog />
       },
       {
-        path: AppRoutes.Product + '/:id',
+        path: `${AppRoutes.Product}/:id`,
         element: <Product />
       },
       {

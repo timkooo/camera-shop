@@ -4,8 +4,8 @@ import { Review } from '../../types/review';
 import { loadReviews } from '../api-actions';
 
 export type InitialState = {
-  reviews: Review[],
-  doesReviewsLoading: boolean,
+  reviews: Review[];
+  doesReviewsLoading: boolean;
 };
 
 const initialState: InitialState = {
@@ -29,6 +29,6 @@ export const reviewsSlice = createSlice({
       .addCase(loadReviews.rejected, (state) => {
         state.reviews = [];
         state.doesReviewsLoading = false;
-      })
+      });
   },
 });

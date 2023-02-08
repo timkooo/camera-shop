@@ -2,7 +2,6 @@ import { configureMockStore } from '@jedmao/redux-mock-store';
 import {render, screen} from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import { makeFakeCamera } from '../../utils/mocks';
 import { PageNotFound } from './page-not-found';
 
 
@@ -18,7 +17,7 @@ describe('Component: PageNotFound', () => {
           <PageNotFound />
         </Provider>
       </MemoryRouter>
-      );
+    );
 
     expect(screen.getByText(/404. Page not found/i)).toBeInTheDocument();
     expect(screen.getByText(/Back to main page/i)).toBeInTheDocument();

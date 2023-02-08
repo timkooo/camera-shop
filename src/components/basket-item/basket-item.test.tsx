@@ -16,7 +16,7 @@ describe('Component: BasketItem', () => {
       <Provider store={store}>
         <BasketItem item={fakeCamera}/>
       </Provider>
-      );
+    );
 
     expect(screen.getByText(fakeCamera.name)).toBeInTheDocument();
   });

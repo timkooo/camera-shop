@@ -1,17 +1,17 @@
-import { makeFakeCamera, makeFakeCameras } from "../../utils/mocks";
+import { makeFakeCamera, makeFakeCameras } from '../../utils/mocks';
 import {
   addToBasket,
   basketSlice,
   InitialState,
   removeFromBasket,
-} from "./basket.slice";
+} from './basket.slice';
 
 const cameras = makeFakeCameras();
 const camera = makeFakeCamera(8);
 const camerasInBasket = [...cameras, camera];
 
-describe("Reducer: basketSlice", () => {
-  it("should add camera to basket by add to basket", () => {
+describe('Reducer: basketSlice', () => {
+  it('should add camera to basket by add to basket', () => {
     const state: InitialState = {
       basket: [],
     };
@@ -26,7 +26,7 @@ describe("Reducer: basketSlice", () => {
     });
   });
 
-  it("should remove camera from basket by remove from basket", () => {
+  it('should remove camera from basket by remove from basket', () => {
     const state: InitialState = {
       basket: camerasInBasket,
     };

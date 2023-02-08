@@ -1,7 +1,7 @@
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import {render, screen} from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from 'react-router-dom';
 import { NameSpace } from '../../const';
 import { makeFakeCameras } from '../../utils/mocks';
 import { Basket } from './basket';
@@ -23,7 +23,7 @@ describe('Component: Basket', () => {
           <Basket />
         </Provider>
       </MemoryRouter>
-      );
+    );
 
     expect(screen.getByText(/Если у вас есть промокод на скидку, примените его в этом поле/i)).toBeInTheDocument();
     expect(screen.getByText(cameras[0].name)).toBeInTheDocument();

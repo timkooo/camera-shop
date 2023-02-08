@@ -1,4 +1,4 @@
-export const REVIEWS_TO_SHOW = 3
+export const REVIEWS_TO_SHOW = 3;
 
 export enum AppRoutes {
   Main = '/',
@@ -30,9 +30,9 @@ const filterNames: Record<string, string> = {
   'zero': 'Нулевой',
   'nonprofessional': 'Любительский',
   'professional': 'Профессиональный',
-}
+};
 
-const filterNamesToTypes: Record<string, string>  = {
+const filterNamesToTypes: Record<string, string> = {
   [filterNames.photocamera]: 'category',
   [filterNames.videocamera]: 'category',
   [filterNames.digital]: 'type',
@@ -42,12 +42,12 @@ const filterNamesToTypes: Record<string, string>  = {
   [filterNames.zero]: 'level',
   [filterNames.nonprofessional]: 'level',
   [filterNames.professional]: 'level',
-}
+};
 
 const sortingNamesToCategories: Record<string, string> = {
   'sort': '_sort',
   'sort-icon': '_order'
-}
+};
 
 export const getCategoryName = (name: string) => filterNamesToTypes[filterNames[name]];
 export const getFilterName = (name: string) => filterNames[name];

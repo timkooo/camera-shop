@@ -1,16 +1,13 @@
-import { Dispatch, FC } from 'react'
+import { Dispatch, FC } from 'react';
 import { Link } from 'react-router-dom';
-import { Camera } from '../../types/camera'
+import { Camera } from '../../types/camera';
 
-  
 type ProductCardProps = {
-  product: Camera,
+  product: Camera;
   onSelectedProductChange: Dispatch<Camera | null>;
 }
 
-export const ProductCard: FC<ProductCardProps> = ({product, onSelectedProductChange}) => {
-
-return (  
+export const ProductCard: FC<ProductCardProps> = ({product, onSelectedProductChange}) => (
   <div className="product-card">
     <div className="product-card__img">
       <picture>
@@ -19,9 +16,10 @@ return (
     </div>
     <div className="product-card__info">
       <div className="rate product-card__rate">
-        {Array.from( {length: 5} ).map((_, index) => ( 
-          <svg key={index} width="17" height="16" aria-hidden="true">
-            <use xlinkHref={index <= product.rating - 1 ? "#icon-full-star" : "#icon-star"} ></use>
+        {Array.from( {length: 5} ).map((_, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <svg key={ index } width="17" height="16" aria-hidden="true">
+            <use xlinkHref={index <= product.rating - 1 ? '#icon-full-star' : '#icon-star'} ></use>
           </svg>
         ))}
         <p className="visually-hidden">Рейтинг: 3</p>
@@ -38,5 +36,4 @@ return (
       </Link>
     </div>
   </div>
-  )
-}
+);

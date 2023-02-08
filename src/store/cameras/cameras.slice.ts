@@ -77,6 +77,6 @@ export const camerasSlice = createSlice({
       .addCase(loadSimilarCameras.rejected, (state) => {
         state.similarCameras = [];
         state.areSimilarCamerasLoading = false;
-      })
+      });
   },
 });

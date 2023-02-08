@@ -7,9 +7,9 @@ const camera = makeFakeCamera();
 const payload = {
   data: cameras,
   headers: {
-    "x-total-count" : "40",
+    'x-total-count' : '40',
   }
-}
+};
 
 describe('Reducer: cameraSlice', () => {
 

@@ -1,8 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { NameSpace } from "../../const";
-import { Filters } from "../../types/filters";
-import { Promo } from "../../types/promo";
-import { loadPromo } from "../api-actions";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { NameSpace } from '../../const';
+import { Filters } from '../../types/filters';
+import { Promo } from '../../types/promo';
+import { loadPromo } from '../api-actions';
 
 export type StringRecord = { [key: string]: string };
 
@@ -29,8 +29,8 @@ const initialState: InitialState = {
   price: {},
   filters: {},
   sorting: {
-    _sort: "price",
-    _order: "asc",
+    _sort: 'price',
+    _order: 'asc',
   },
   parameters: {},
   promo: null,

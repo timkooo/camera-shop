@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable camelcase */
 import {Action} from 'redux';
 import thunk, {ThunkDispatch} from 'redux-thunk';
 import MockAdapter from 'axios-mock-adapter';
@@ -10,7 +12,7 @@ import { loadCameraById, loadCameras, loadCamerasWithParams, loadReviews, loadSi
 
 describe('Async actions', () => {
   const mockAPI = new MockAdapter(api);
- 
+
   const middlewares = [thunk.withExtraArgument(api)];
 
   const mockStore = configureMockStore<
@@ -40,9 +42,9 @@ describe('Async actions', () => {
   it('should dispatch loadCamerasWithParams when GET /cameras', async () => {
     const mockCameras = makeFakeCameras();
     mockAPI
-    .onGet(APIRoute.Cameras)
-    .reply(200, mockCameras);
-    
+      .onGet(APIRoute.Cameras)
+      .reply(200, mockCameras);
+
     const store = mockStore( {
       [NameSpace.Application]: {
         price: {
@@ -59,7 +61,7 @@ describe('Async actions', () => {
     });
 
     await store.dispatch(loadCamerasWithParams());
-   
+
     const actions = store.getActions().map(({type}) => type);
 
     expect(actions).toEqual([

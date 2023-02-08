@@ -2,7 +2,7 @@ import { configureMockStore } from '@jedmao/redux-mock-store';
 import {render, screen} from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { makeFakeReview } from '../../utils/mocks';
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from 'react-router-dom';
 import { ReviewCard } from './review-card';
 
 const mockStore = configureMockStore();
@@ -18,7 +18,7 @@ describe('Component: ReviewCard', () => {
           <ReviewCard review={fakeReview}/>
         </Provider>
       </MemoryRouter>
-      );
+    );
 
     expect(screen.getByText(fakeReview.review)).toBeInTheDocument();
   });

@@ -1,15 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ProductCard } from "../../components/product-card/product-card";
-import { useAppDispatch, useAppSelector } from "../../hooks/rtkHooks";
-import { loadCamerasWithParams, loadPromo } from "../../store/api-actions";
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+import React, { useEffect, useRef, useState } from 'react';
+import { ProductCard } from '../../components/product-card/product-card';
+import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
+import { loadCamerasWithParams, loadPromo } from '../../store/api-actions';
 import {
   selectCameras,
   selectCamerasAmount,
   selectAreCamerasLoading,
-} from "../../store/cameras/cameras.selectors";
-import { Camera } from "../../types/camera";
-import { Filters } from "../../types/filters";
-import classNames from "classnames";
+} from '../../store/cameras/cameras.selectors';
+import { Camera } from '../../types/camera';
+import { Filters } from '../../types/filters';
+import classNames from 'classnames';
 import {
   Price,
   Sorting,
@@ -17,22 +18,22 @@ import {
   updateParameters,
   updatePrice,
   updateSorting,
-} from "../../store/application/application.slice";
+} from '../../store/application/application.slice';
 import {
   AppRoutes,
   getCategoryName,
   getFilterName,
   getSortingCategory,
-} from "../../const";
+} from '../../const';
 import {
   selectParameters,
   selectPromo,
   selectSorting,
-} from "../../store/application/application.selectors";
-import { Link, useParams } from "react-router-dom";
-import { addToBasket } from "../../store/basket/basket.slice";
-import FocusLock from "react-focus-lock";
-import { useModal } from '../../hooks/useModal';
+} from '../../store/application/application.selectors';
+import { Link, useParams } from 'react-router-dom';
+import { addToBasket } from '../../store/basket/basket.slice';
+import FocusLock from 'react-focus-lock';
+import { useModal } from '../../hooks/use-modal';
 
 export const Catalog = () => {
   const { pageNumber = 1 } = useParams();
@@ -52,10 +53,9 @@ export const Catalog = () => {
   const priceToRef = useRef<HTMLInputElement>(null);
   const camerasLimit = 9;
   const dispatch = useAppDispatch();
+  const mounted = useRef(false);
 
-  const countPageNumber = () => {
-    return Math.ceil(camerasAmount / camerasLimit);
-  };
+  const countPageNumber = () => Math.ceil(camerasAmount / camerasLimit);
 
   const productsToShow = () => {
     const start = (Number(pageNumber) - 1) * camerasLimit;
@@ -69,26 +69,24 @@ export const Catalog = () => {
   };
 
   const handleFilterFormChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value }: { name: string; value: string | number } =
+    const { name }: { name: string; value: string | number } =
       evt.target;
     const categoryName = getCategoryName(name) as keyof Camera;
     const filterName = getFilterName(name);
     let data = {};
     let list = [...filtersList];
-    if (evt.target.type === "checkbox") {
+    if (evt.target.type === 'checkbox') {
       if (evt.target.checked === true) {
         data = addFilter(categoryName, filterName);
         list = [...list, name];
       }
       if (evt.target.checked === false) {
-        console.log("FILTER-NAME", filterName);
         data = removeFilter(categoryName, filterName);
-        const index = list.indexOf(name as string);
+        const index = list.indexOf(name);
         if (index > -1) {
           list.splice(index, 1);
         }
       }
-      console.log("formData", data);
       setFiltersList(() => list);
       setFiltersFormData(() => data);
     }
@@ -101,30 +99,32 @@ export const Catalog = () => {
   };
 
   const handleFromPriceChange = (evt: React.KeyboardEvent) => {
-    if (evt.key === "Enter") {
+    if (evt.key === 'Enter') {
       if (Number(priceFromRef.current?.value) === 0) {
-        const price = {...priceFilterData};
+        const price = { ...priceFilterData };
         delete price['price_gte'];
         setPriceFilterData(price);
         return;
       }
       setPriceFilterData({
         ...priceFilterData,
+        // eslint-disable-next-line camelcase
         price_gte: Number(priceFromRef.current?.value),
       });
     }
   };
 
   const handleToPriceChange = (evt: React.KeyboardEvent) => {
-    if (evt.key === "Enter") {
+    if (evt.key === 'Enter') {
       if (Number(priceToRef.current?.value) === 0) {
-        const price = {...priceFilterData};
+        const price = { ...priceFilterData };
         delete price['price_lte'];
         setPriceFilterData(price);
         return;
       }
       setPriceFilterData({
         ...priceFilterData,
+        // eslint-disable-next-line camelcase
         price_lte: Number(priceToRef.current?.value),
       });
     }
@@ -146,9 +146,7 @@ export const Catalog = () => {
     setSortingFormData(sortingData);
   };
 
-  const isFilterChecked = (name: string) => {
-    return filtersList.includes(name);
-  };
+  const isFilterChecked = (name: string) => filtersList.includes(name);
 
   const addFilter = <K extends keyof Camera>(name: K, value: Camera[K]) => {
     let filters = { ...filtersFormData } as Filters;
@@ -163,11 +161,11 @@ export const Catalog = () => {
   };
 
   const removeFilter = <K extends keyof Camera>(name: K, value: Camera[K]) => {
-    let filters = { ...filtersFormData } as Filters;
-    let filters2 = [...(filters[name] as typeof value[])];
-    const index = filters[name]?.indexOf(value as Camera[K]);
+    const filters = { ...filtersFormData } as Filters;
+    const filters2 = [...(filters[name] as typeof value[])];
+    const index = filters[name]?.indexOf(value);
     if (index !== undefined && index > -1) {
-      (filters2 as typeof value[]).splice(index, 1);
+      (filters2).splice(index, 1);
       (filters[name] as typeof value[]) = filters2;
     }
     return filters;
@@ -198,32 +196,17 @@ export const Catalog = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (mounted.current === true || areCamerasLoading) {
+      return;
+    }
+    mounted.current = true;
     dispatch(loadCamerasWithParams());
-  }, [
-    dispatch,
-    filtersFormData,
-    parameters,
-    sortingFormData,
-    priceFilterData,
-  ]);
+    return () => {
+      mounted.current = false;
+    };
+  }, [dispatch, filtersFormData, parameters, sortingFormData, priceFilterData]);
 
-  useModal(selectedProduct ? true : false);
-
-  // useEffect(() => {
-  //   selectedProduct
-  //     ? (document.body.style.overflow = "hidden")
-  //     : (document.body.style.overflow = "unset");
-  // }, [selectedProduct]);
-
-  // useEffect(() => {
-  //   const handleEscapeKey = (event: KeyboardEvent) => {
-  //     if (event.code === "Escape") {
-  //       setSelectedProduct(null);
-  //     }
-  //   }
-  //   document.addEventListener("keydown", handleEscapeKey);
-  //   return () => document.removeEventListener("keydown", handleEscapeKey);
-  // }, []);
+  useModal(!!selectedProduct);
 
   if (areCamerasLoading) {
     return <div>LOADING</div>;
@@ -344,7 +327,7 @@ export const Catalog = () => {
                             <input
                               type="checkbox"
                               name="photocamera"
-                              checked={isFilterChecked("photocamera")}
+                              checked={isFilterChecked('photocamera')}
                               onChange={handleFilterFormChange}
                             />
                             <span className="custom-checkbox__icon"></span>
@@ -358,7 +341,7 @@ export const Catalog = () => {
                             <input
                               type="checkbox"
                               name="videocamera"
-                              checked={isFilterChecked("videocamera")}
+                              checked={isFilterChecked('videocamera')}
                               onChange={handleFilterFormChange}
                             />
                             <span className="custom-checkbox__icon"></span>
@@ -375,7 +358,7 @@ export const Catalog = () => {
                             <input
                               type="checkbox"
                               name="digital"
-                              checked={isFilterChecked("digital")}
+                              checked={isFilterChecked('digital')}
                               onChange={handleFilterFormChange}
                             />
                             <span className="custom-checkbox__icon"></span>
@@ -398,7 +381,7 @@ export const Catalog = () => {
                             <input
                               type="checkbox"
                               name="snapshot"
-                              checked={isFilterChecked("snapshot")}
+                              checked={isFilterChecked('snapshot')}
                               onChange={handleFilterFormChange}
                             />
                             <span className="custom-checkbox__icon"></span>
@@ -429,7 +412,7 @@ export const Catalog = () => {
                             <input
                               type="checkbox"
                               name="zero"
-                              checked={isFilterChecked("zero")}
+                              checked={isFilterChecked('zero')}
                               onChange={handleFilterFormChange}
                             />
                             <span className="custom-checkbox__icon"></span>
@@ -443,7 +426,7 @@ export const Catalog = () => {
                             <input
                               type="checkbox"
                               name="nonprofessional"
-                              checked={isFilterChecked("nonprofessional")}
+                              checked={isFilterChecked('nonprofessional')}
                               onChange={handleFilterFormChange}
                             />
                             <span className="custom-checkbox__icon"></span>
@@ -457,7 +440,7 @@ export const Catalog = () => {
                             <input
                               type="checkbox"
                               name="professional"
-                              checked={isFilterChecked("professional")}
+                              checked={isFilterChecked('professional')}
                               onChange={handleFilterFormChange}
                             />
                             <span className="custom-checkbox__icon"></span>
@@ -490,7 +473,7 @@ export const Catalog = () => {
                               name="sort"
                               value="price"
                               onChange={handleSortingFormChange}
-                              checked={sorting._sort === "price"}
+                              checked={sorting._sort === 'price'}
                             />
                             <label htmlFor="sortPrice">по цене</label>
                           </div>
@@ -501,7 +484,7 @@ export const Catalog = () => {
                               name="sort"
                               value="rating"
                               onChange={handleSortingFormChange}
-                              checked={sorting._sort === "rating"}
+                              checked={sorting._sort === 'rating'}
                             />
                             <label htmlFor="sortPopular">по популярности</label>
                           </div>
@@ -515,7 +498,7 @@ export const Catalog = () => {
                               aria-label="По возрастанию"
                               value="asc"
                               onChange={handleSortingFormChange}
-                              checked={sorting._order === "asc"}
+                              checked={sorting._order === 'asc'}
                             />
                             <label htmlFor="up">
                               <svg width="16" height="14" aria-hidden="true">
@@ -531,7 +514,7 @@ export const Catalog = () => {
                               aria-label="По убыванию"
                               value="desc"
                               onChange={handleSortingFormChange}
-                              checked={sorting._order === "desc"}
+                              checked={sorting._order === 'desc'}
                             />
                             <label htmlFor="down">
                               <svg width="16" height="14" aria-hidden="true">
@@ -561,9 +544,9 @@ export const Catalog = () => {
                       <li className="pagination__item">
                         <Link
                           className={classNames(
-                            "pagination__link",
-                            "pagination__link--text",
-                            { "visually-hidden": Number(pageNumber) === 1 }
+                            'pagination__link',
+                            'pagination__link--text',
+                            { 'visually-hidden': Number(pageNumber) === 1 }
                           )}
                           to={`/catalog/page/${Number(pageNumber) - 1}`}
                         >
@@ -571,10 +554,11 @@ export const Catalog = () => {
                         </Link>
                       </li>
                       {Array.from({ length: pagesNumber }).map((_, index) => (
-                        <li key={index} className="pagination__item">
+                        // eslint-disable-next-line react/no-array-index-key
+                        <li key={ index } className="pagination__item">
                           <Link
-                            className={classNames("pagination__link", {
-                              "pagination__link--active":
+                            className={classNames('pagination__link', {
+                              'pagination__link--active':
                                 Number(pageNumber) === index + 1,
                             })}
                             to={`/catalog/page/${index + 1}`}
@@ -586,10 +570,10 @@ export const Catalog = () => {
                       <li className="pagination__item">
                         <Link
                           className={classNames(
-                            "pagination__link",
-                            "pagination__link--text",
+                            'pagination__link',
+                            'pagination__link--text',
                             {
-                              "visually-hidden":
+                              'visually-hidden':
                                 Number(pageNumber) === pagesNumber,
                             }
                           )}
@@ -607,7 +591,7 @@ export const Catalog = () => {
         </div>
       </main>
 
-      <div className={classNames("modal", { "is-active": selectedProduct })}>
+      <div className={classNames('modal', { 'is-active': selectedProduct })}>
         <div
           className="modal__wrapper"
           onClick={() => setSelectedProduct(null)}
@@ -624,14 +608,14 @@ export const Catalog = () => {
                   <picture>
                     <source
                       type="image/webp"
-                      srcSet="img/content/img9.webp, img/content/img9@2x.webp 2x"
+                      srcSet={`/${selectedProduct?.previewImgWebp}, /${selectedProduct?.previewImgWebp2x}`}
                     />
                     <img
-                      src="img/content/img9.jpg"
-                      srcSet="img/content/img9@2x.jpg 2x"
+                      src={selectedProduct?.previewImg}
+                      srcSet={`${selectedProduct?.previewImg2x} 2x`}
                       width="140"
                       height="120"
-                      alt="Фотоаппарат «Орлёнок»"
+                      alt={selectedProduct?.name}
                     />
                   </picture>
                 </div>
@@ -639,18 +623,18 @@ export const Catalog = () => {
                   <p className="basket-item__title">{selectedProduct?.name}</p>
                   <ul className="basket-item__list">
                     <li className="basket-item__list-item">
-                      <span className="basket-item__article">Артикул:</span>{" "}
-                      <span className="basket-item__number">O78DFGSD832</span>
+                      <span className="basket-item__article">Артикул:</span>{' '}
+                      <span className="basket-item__number">{selectedProduct?.vendorCode}</span>
                     </li>
                     <li className="basket-item__list-item">
-                      Плёночная фотокамера
+                      {selectedProduct?.type}
                     </li>
                     <li className="basket-item__list-item">
-                      Любительский уровень
+                      {selectedProduct?.level}
                     </li>
                   </ul>
                   <p className="basket-item__price">
-                    <span className="visually-hidden">Цена:</span>18 970 ₽
+                    <span className="visually-hidden">Цена:</span>{selectedProduct?.price.toLocaleString()} ₽
                   </p>
                 </div>
               </div>

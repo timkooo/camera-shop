@@ -1,9 +1,10 @@
+/* eslint-disable jest/no-identical-title */
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import {render, screen} from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from 'react-router-dom';
 import { NameSpace } from '../../const';
-import { makeFakeCamera, makeFakeCameras, makeFakePromo, makeFakeReviews } from '../../utils/mocks';
+import { makeFakeCamera, makeFakeCameras, makeFakeReviews } from '../../utils/mocks';
 import thunk from 'redux-thunk';
 import { Product } from './product';
 
@@ -13,7 +14,7 @@ describe('Component: Product', () => {
   it('should render correctly', () => {
     const camera = makeFakeCamera(3);
     const reviews = makeFakeReviews();
-    
+
     const store = mockStore({
       [NameSpace.Cameras]: {
         cameraById: camera,
@@ -32,7 +33,7 @@ describe('Component: Product', () => {
           <Product />
         </Provider>
       </MemoryRouter>
-      );
+    );
 
     expect(screen.getAllByText(camera.name)[0]).toBeInTheDocument();
     expect(screen.getByText(reviews[0].userName)).toBeInTheDocument();
@@ -58,7 +59,7 @@ describe('Component: Product', () => {
           <Product />
         </Provider>
       </MemoryRouter>
-      );
+    );
 
     expect(screen.getByText(/Sorry no such camera found/i)).toBeInTheDocument();
     expect(screen.getByText(/Back to catalog/i)).toBeInTheDocument();

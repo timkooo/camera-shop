@@ -1,5 +1,6 @@
-import { makeFakeCamera, makeFakeCameras, makeFakePromo } from '../../utils/mocks';
-import { loadCameraById, loadCameras, loadCamerasWithParams, loadPromo, loadSimilarCameras } from '../api-actions';
+/* eslint-disable camelcase */
+import { makeFakePromo } from '../../utils/mocks';
+import { loadPromo } from '../api-actions';
 import { applicationSlice, InitialState, updateFilters, updateParameters, updatePrice, updateSorting } from './application.slice';
 
 const promo = makeFakePromo();
@@ -9,7 +10,7 @@ describe('Reducer: applicationSlice', () => {
   let state : InitialState;
 
   beforeEach(() => {
-    state =  {
+    state = {
       price: {
         price_gte: 6000,
         price_lte: 8000,
@@ -31,7 +32,7 @@ describe('Reducer: applicationSlice', () => {
         type : ['digital', 'film'],
         level : ['zero', 'professional']
       }))
-    ).toEqual({ 
+    ).toEqual({
       price: {
         price_gte: 6000,
         price_lte: 8000,
@@ -56,7 +57,7 @@ describe('Reducer: applicationSlice', () => {
         price_gte: 9000,
         price_lte: 30000,
       }))
-    ).toEqual({ 
+    ).toEqual({
       price: {
         price_gte: 9000,
         price_lte: 30000,
@@ -78,7 +79,7 @@ describe('Reducer: applicationSlice', () => {
         _sort: 'rating',
         _order: 'desc',
       }))
-    ).toEqual({ 
+    ).toEqual({
       price: {
         price_gte: 6000,
         price_lte: 8000,
@@ -97,10 +98,10 @@ describe('Reducer: applicationSlice', () => {
   it('should update parameters', () => {
     expect(
       applicationSlice.reducer(state, updateParameters({
-        "_start": "0",
-        "_end": "10",
+        '_start': '0',
+        '_end': '10',
       }))
-    ).toEqual({ 
+    ).toEqual({
       price: {
         price_gte: 6000,
         price_lte: 8000,
@@ -111,8 +112,8 @@ describe('Reducer: applicationSlice', () => {
         _order: 'asc',
       },
       parameters: {
-        "_start": "0",
-        "_end": "10",
+        '_start': '0',
+        '_end': '10',
       },
       promo: null,
       isPromoLoading: false,

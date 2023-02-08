@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import {
   RouterProvider,
   createMemoryRouter,
-} from "react-router-dom";
+} from 'react-router-dom';
 import { routesConfig } from '../../routes-config';
 import { AppRoutes, NameSpace } from '../../const';
 import thunk from 'redux-thunk';
@@ -37,10 +37,10 @@ describe('Application Routing', () => {
     });
 
     render(
-        <Provider store={store}>
-          <RouterProvider router={router}/>);
-        </Provider>
-        )
+      <Provider store={store}>
+        <RouterProvider router={router}/>);
+      </Provider>
+    );
 
     expect(screen.getByText(/Каталог фото- и видеотехники/i)).toBeInTheDocument();
   });
@@ -66,28 +66,28 @@ describe('Application Routing', () => {
     });
 
     render(
-        <Provider store={store}>
-          <RouterProvider router={router}/>);
-        </Provider>
-        )
+      <Provider store={store}>
+        <RouterProvider router={router}/>);
+      </Provider>
+    );
 
     expect(screen.getByText(/Каталог фото- и видеотехники/i)).toBeInTheDocument();
   });
 
   it('Should render "Catalog" when user navigate to "/catalog/pages/:id"', () => {
-    
+
     const routes = [
       {
-        path: AppRoutes.Catalog + '/page/3',
+        path: `${AppRoutes.Catalog}/page/3`,
         element: <Catalog />,
       },
     ];
-   
+
     const router = createMemoryRouter(routes, {
       initialEntries: [`${AppRoutes.Catalog}/page/3`],
     });
 
-    const history = createMemoryHistory({ initialEntries: [`${AppRoutes.Catalog}/page/3`]})
+    const history = createMemoryHistory({ initialEntries: [`${AppRoutes.Catalog}/page/3`]});
 
     const store = mockStore({
       [NameSpace.Application]: {
@@ -106,10 +106,10 @@ describe('Application Routing', () => {
     });
 
     render(
-        <Provider store={store}>
-          <RouterProvider router={router}/>);
-        </Provider>
-      )
+      <Provider store={store}>
+        <RouterProvider router={router}/>);
+      </Provider>
+    );
 
     expect(history.location.pathname).toBe(`${AppRoutes.Catalog}/page/3`);
   });
@@ -137,7 +137,7 @@ describe('Application Routing', () => {
       <Provider store={store}>
         <RouterProvider router={router}/>);
       </Provider>
-    )
+    );
 
     expect(screen.getByText(/Похожие товары/i)).toBeInTheDocument();
   });
@@ -165,13 +165,12 @@ describe('Application Routing', () => {
     });
 
     render(
-        <Provider store={store}>
-          <RouterProvider router={router}/>);
-        </Provider>
-        )
+      <Provider store={store}>
+        <RouterProvider router={router}/>);
+      </Provider>
+    );
 
     expect(screen.getByText(/Если у вас есть промокод на скидку, примените его в этом поле/i)).toBeInTheDocument();
   });
 
-
-})
+});
