@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import {render, screen} from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -12,11 +11,12 @@ describe('Component: ProductCard', () => {
   it('should render correctly', () => {
     const fakeCamera = makeFakeCamera();
     const store = mockStore();
+    const handler = jest.fn();
 
     render(
       <MemoryRouter>
         <Provider store={store}>
-          <ProductCard product={fakeCamera} onSelectedProductChange={() => {}}/>
+          <ProductCard product={fakeCamera} onSelectedProductChange={handler}/>
         </Provider>
       </MemoryRouter>
     );

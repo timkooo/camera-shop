@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import React, { useEffect, useRef, useState } from 'react';
 import { ProductCard } from '../../components/product-card/product-card';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
@@ -24,6 +23,8 @@ import {
   getCategoryName,
   getFilterName,
   getSortingCategory,
+  PRODUCTS_PER_PAGE,
+  SortingTypes,
 } from '../../const';
 import {
   selectParameters,
@@ -51,7 +52,7 @@ export const Catalog = () => {
   const [productModalVisible, productModalToggle] = useModal();
   const priceFromRef = useRef<HTMLInputElement>(null);
   const priceToRef = useRef<HTMLInputElement>(null);
-  const camerasLimit = 9;
+  const camerasLimit = PRODUCTS_PER_PAGE;
   const dispatch = useAppDispatch();
   const mounted = useRef(false);
 
@@ -102,14 +103,13 @@ export const Catalog = () => {
     if (evt.key === 'Enter') {
       if (Number(priceFromRef.current?.value) === 0) {
         const price = { ...priceFilterData };
-        delete price['price_gte'];
+        delete price[SortingTypes.PriceUp];
         setPriceFilterData(price);
         return;
       }
       setPriceFilterData({
         ...priceFilterData,
-        // eslint-disable-next-line camelcase
-        price_gte: Number(priceFromRef.current?.value),
+        [SortingTypes.PriceUp]: Number(priceFromRef.current?.value),
       });
     }
   };
@@ -118,14 +118,13 @@ export const Catalog = () => {
     if (evt.key === 'Enter') {
       if (Number(priceToRef.current?.value) === 0) {
         const price = { ...priceFilterData };
-        delete price['price_lte'];
+        delete price[SortingTypes.PriceDown];
         setPriceFilterData(price);
         return;
       }
       setPriceFilterData({
         ...priceFilterData,
-        // eslint-disable-next-line camelcase
-        price_lte: Number(priceToRef.current?.value),
+        [SortingTypes.PriceDown]: Number(priceToRef.current?.value),
       });
     }
   };
@@ -548,9 +547,8 @@ export const Catalog = () => {
                           Назад
                       </Link>
                     </li>
-                    {Array.from({ length: pagesNumber }).map((_, index) => (
-                      // eslint-disable-next-line react/no-array-index-key
-                      <li key={ index } className="pagination__item">
+                    {Array.from({ length: pagesNumber }, (v, k) => k + 1).map((element, index) => (
+                      <li key={ element } className="pagination__item">
                         <Link
                           className={classNames('pagination__link', {
                             'pagination__link--active':

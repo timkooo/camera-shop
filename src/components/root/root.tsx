@@ -1,8 +1,9 @@
+import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { AppRoutes } from '../../const';
 
 export const Root = () => (
-  <>
+  <React.Fragment>
     <div className="visually-hidden">
       <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
         <symbol id="icon-add-basket" viewBox="0 0 24 16">
@@ -221,4 +222,5 @@ export const Root = () => (
         </div>
       </footer>
     </div>
-  </>);
+  </React.Fragment>
+);

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable react/no-array-index-key */
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -106,7 +103,7 @@ export const Product = () => {
   }
 
   return camera ? (
-    <>
+    <React.Fragment>
       <main>
         <div className="page-content">
           <div className="breadcrumbs">
@@ -157,9 +154,9 @@ export const Product = () => {
                 <div className="product__content">
                   <h1 className="title title--h3">{camera.name}</h1>
                   <div className="rate product__rate">
-                    {Array.from({ length: 5 }).map((_, index) => (
+                    {Array.from<number>(Array.from({ length: 5 }, (v, k) => k + 1)).map((element, index) => (
                       <svg
-                        key={ index }
+                        key={ element }
                         width="17"
                         height="16"
                         aria-hidden="true"
@@ -337,7 +334,7 @@ export const Product = () => {
           <use xlinkHref="#icon-arrow2"></use>
         </svg>
       </a>
-    </>
+    </React.Fragment>
   ) : (
     <div>
       <h1>Sorry no such camera found</h1>

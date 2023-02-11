@@ -1,4 +1,5 @@
 export const REVIEWS_TO_SHOW = 3;
+export const PRODUCTS_PER_PAGE = 9;
 
 export enum AppRoutes {
   Main = '/',
@@ -52,3 +53,8 @@ const sortingNamesToCategories: Record<string, string> = {
 export const getCategoryName = (name: string) => filterNamesToTypes[filterNames[name]];
 export const getFilterName = (name: string) => filterNames[name];
 export const getSortingCategory = (name: string) => sortingNamesToCategories[name];
+
+export enum SortingTypes {
+  PriceUp = 'price_gte',
+  PriceDown = 'price_lte'
+}

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppDispatch } from '../../hooks/rtk-hooks';
 import { ReviewPost } from '../../types/review';
 import FocusLock from 'react-focus-lock';
@@ -12,6 +12,14 @@ type ReviewModalProps = {
   onModalToggle: () => void;
   afterModalToggle?: () => void;
 }
+
+const ratingConfig = [
+  { rating: 5, value: 'Отлично' },
+  { rating: 4, value: 'Хорошо' },
+  { rating: 3, value: 'Нормально' },
+  { rating: 2, value: 'Плохо' },
+  { rating: 1, value: 'Ужасно' },
+];
 
 export const ReviewModal = ( { product, modalVisible = false, onModalToggle, afterModalToggle } : ReviewModalProps) => {
   const [reviewFormData, setReviewFormData] = useState<ReviewPost>({
@@ -95,81 +103,24 @@ export const ReviewModal = ( { product, modalVisible = false, onModalToggle, aft
                     </legend>
                     <div className="rate__bar">
                       <div className="rate__group">
-                        <input
-                          className="visually-hidden"
-                          id="star-5"
-                          name="rating"
-                          type="radio"
-                          value={5}
-                          onChange={handleReviewFormChange}
-                          checked={reviewFormData.rating === 5}
-                        />
-                        <label
-                          className="rate__label"
-                          htmlFor="star-5"
-                          title="Отлично"
-                        >
-                        </label>
-                        <input
-                          className="visually-hidden"
-                          id="star-4"
-                          name="rating"
-                          type="radio"
-                          value={4}
-                          onChange={handleReviewFormChange}
-                          checked={reviewFormData.rating === 4}
-                        />
-                        <label
-                          className="rate__label"
-                          htmlFor="star-4"
-                          title="Хорошо"
-                        >
-                        </label>
-                        <input
-                          className="visually-hidden"
-                          id="star-3"
-                          name="rating"
-                          type="radio"
-                          value={3}
-                          onChange={handleReviewFormChange}
-                          checked={reviewFormData.rating === 3}
-                        />
-                        <label
-                          className="rate__label"
-                          htmlFor="star-3"
-                          title="Нормально"
-                        >
-                        </label>
-                        <input
-                          className="visually-hidden"
-                          id="star-2"
-                          name="rating"
-                          type="radio"
-                          value={2}
-                          onChange={handleReviewFormChange}
-                          checked={reviewFormData.rating === 2}
-                        />
-                        <label
-                          className="rate__label"
-                          htmlFor="star-2"
-                          title="Плохо"
-                        >
-                        </label>
-                        <input
-                          className="visually-hidden"
-                          id="star-1"
-                          name="rating"
-                          type="radio"
-                          value={1}
-                          onChange={handleReviewFormChange}
-                          checked={reviewFormData.rating === 1}
-                        />
-                        <label
-                          className="rate__label"
-                          htmlFor="star-1"
-                          title="Ужасно"
-                        >
-                        </label>
+                        {ratingConfig.map(({rating, value}) => (
+                          <React.Fragment key={rating}>
+                            <input
+                              className="visually-hidden"
+                              id={`star-${rating}`}
+                              name="rating"
+                              type="radio"
+                              value={rating}
+                              onChange={handleReviewFormChange}
+                              checked={reviewFormData.rating === rating}
+                            />
+                            <label
+                              className="rate__label"
+                              htmlFor={`star-${rating}`}
+                              title={value}
+                            >
+                            </label>
+                          </React.Fragment>))}
                       </div>
                       <div className="rate__progress">
                         <span className="rate__stars">

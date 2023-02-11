@@ -1,4 +1,3 @@
-
 import FocusLock, { AutoFocusInside } from 'react-focus-lock';
 import { Dispatch } from 'react';
 import { Camera } from '../../types/camera';

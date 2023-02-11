@@ -10,7 +10,7 @@ import thunk from 'redux-thunk';
 const mockStore = configureMockStore([thunk]);
 
 describe('Component: Catalog', () => {
-  it('should render correctly', () => {
+  it('should render correctly with cameras loaded', () => {
     const cameras = makeFakeCameras();
     const store = mockStore({
       [NameSpace.Application]: {
@@ -41,8 +41,7 @@ describe('Component: Catalog', () => {
     expect(screen.getByText(cameras[3].name)).toBeInTheDocument();
   });
 
-  // eslint-disable-next-line jest/no-identical-title
-  it('should render correctly', () => {
+  it('should render correctly without cameras', () => {
     const store = mockStore({
       [NameSpace.Application]: {
         promo: null,
