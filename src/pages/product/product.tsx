@@ -48,6 +48,7 @@ export const Product = () => {
   const [selectedProduct, setSelectedProduct] = useState<Camera | null>(null);
   const [reviewModalVisible, reviewModalToggle] = useModal();
   const [successModalVisible, successModalToggle] = useModal();
+  const [productModalVisible, productModalToggle] = useModal();
   const dispatch = useAppDispatch();
 
   const moveProductsRight = () => {
@@ -73,6 +74,11 @@ export const Product = () => {
     const toShow = [...reviewsToShow, ...remained.splice(0, REVIEWS_TO_SHOW)];
     setReviewsRemained(remained);
     setReviewsToShow(toShow);
+  };
+
+  const handleProductSelection = (product: Camera) => {
+    setSelectedProduct(product);
+    productModalToggle();
   };
 
   const isProductActive = (index: number) => index <= activeProducts.end && index >= activeProducts.start;
@@ -258,7 +264,7 @@ export const Product = () => {
                     {areSimilarCamerasLoading ? (
                       <div>LOADING</div>
                     ) : (
-                      similarCameras.map((similarCamera, index) => <ProductCard key={similarCamera.id} product={similarCamera} onSelectedProductChange={setSelectedProduct} isActive={isProductActive(index)}/>)
+                      similarCameras.map((similarCamera, index) => <ProductCard key={similarCamera.id} product={similarCamera} onSelectedProductChange={() => handleProductSelection(similarCamera)} isActive={isProductActive(index)}/>)
                     )}
                   </div>
                   <button
@@ -323,7 +329,7 @@ export const Product = () => {
 
         <SuccessModal modalVisible={successModalVisible} onModalToggle={successModalToggle}/>
         <ReviewModal product={camera} modalVisible={reviewModalVisible} onModalToggle={reviewModalToggle} afterModalToggle={successModalToggle}/>
-        <ProductModal product={selectedProduct} onProductSelect={setSelectedProduct}/>
+        <ProductModal product={selectedProduct} modalVisible={productModalVisible} onModalToggle={productModalToggle} onProductSelect={setSelectedProduct}/>
 
       </main>
       <a className="up-btn" href="#header">

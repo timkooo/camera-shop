@@ -1,46 +1,39 @@
 
 import FocusLock, { AutoFocusInside } from 'react-focus-lock';
-import { Dispatch, useEffect } from 'react';
+import { Dispatch } from 'react';
 import { Camera } from '../../types/camera';
 import { useAppDispatch } from '../../hooks/rtk-hooks';
 import { addToBasket } from '../../store/basket/basket.slice';
+import classNames from 'classnames';
 
 type ProductModalProps = {
   product: Camera | null;
+  modalVisible: boolean;
+  onModalToggle: () => void;
   onProductSelect: Dispatch<Camera | null>;
 }
 
-export const ProductModal = ({ product, onProductSelect } : ProductModalProps) => {
+export const ProductModal = ({ product, modalVisible, onModalToggle, onProductSelect } : ProductModalProps) => {
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    product
-      ? (document.body.style.overflow = 'hidden')
-      : (document.body.style.overflow = 'unset');
-  }, [product]);
-
-  useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.code === 'Escape') {
-        onProductSelect(null);
-      }
-    };
-    document.addEventListener('keydown', handleEscapeKey);
-    return () => document.removeEventListener('keydown', handleEscapeKey);
-  }, []);
 
   const handleAddItemToBasket = () => {
     if (product) {
       dispatch(addToBasket(product));
     }
     onProductSelect(null);
+    onModalToggle();
+  };
+
+  const handleCloseModal = () => {
+    onProductSelect(null);
+    onModalToggle();
   };
 
   return product && (
-    <div className="modal is-active">
+    <div className={classNames('modal', {'is-active': modalVisible})}>
       <div
         className="modal__wrapper"
-        onClick={() => onProductSelect(null)}
+        onClick={handleCloseModal}
       >
         <div className="modal__overlay"></div>
         <FocusLock>
@@ -102,7 +95,7 @@ export const ProductModal = ({ product, onProductSelect } : ProductModalProps) =
               className="cross-btn"
               type="button"
               aria-label="Закрыть попап"
-              onClick={() => onProductSelect(null)}
+              onClick={handleCloseModal}
             >
               <svg width="10" height="10" aria-hidden="true">
                 <use xlinkHref="#icon-close"></use>

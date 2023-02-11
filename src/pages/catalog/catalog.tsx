@@ -32,6 +32,7 @@ import {
 } from '../../store/application/application.selectors';
 import { Link, useParams } from 'react-router-dom';
 import { ProductModal } from '../../components/product-modal/product-modal';
+import { useModal } from '../../hooks/use-modal';
 
 export const Catalog = () => {
   const { pageNumber = 1 } = useParams();
@@ -47,6 +48,7 @@ export const Catalog = () => {
   const [sortingFormData, setSortingFormData] = useState<Sorting>(sorting);
   const [filtersList, setFiltersList] = useState<string[]>([]);
   const [priceFilterData, setPriceFilterData] = useState<Price>({});
+  const [productModalVisible, productModalToggle] = useModal();
   const priceFromRef = useRef<HTMLInputElement>(null);
   const priceToRef = useRef<HTMLInputElement>(null);
   const camerasLimit = 9;
@@ -196,6 +198,11 @@ export const Catalog = () => {
       mounted.current = false;
     };
   }, [dispatch, filtersFormData, parameters, sortingFormData, priceFilterData]);
+
+  const handleProductSelection = (product: Camera) => {
+    setSelectedProduct(product);
+    productModalToggle();
+  };
 
   if (areCamerasLoading) {
     return <div>LOADING</div>;
@@ -522,7 +529,7 @@ export const Catalog = () => {
                       <ProductCard
                         key={camera.id}
                         product={camera}
-                        onSelectedProductChange={setSelectedProduct}
+                        onSelectedProductChange={() => handleProductSelection(camera)}
                       />
                     ))
                   )}
@@ -578,7 +585,7 @@ export const Catalog = () => {
         </section>
       </div>
 
-      <ProductModal product={selectedProduct} onProductSelect={setSelectedProduct}/>
+      <ProductModal product={selectedProduct} modalVisible={productModalVisible} onModalToggle={productModalToggle} onProductSelect={setSelectedProduct}/>
 
     </main>
   );
