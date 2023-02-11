@@ -1,5 +1,5 @@
 import { makeFakeCamera, makeFakeCameras } from '../../utils/mocks';
-import { loadCameraById, loadCameras, loadCamerasWithParams, loadSimilarCameras } from '../api-actions';
+import { loadCameraById, loadCamerasWithParams, loadSimilarCameras } from '../api-actions';
 import { camerasSlice, InitialState } from './cameras.slice';
 
 const cameras = makeFakeCameras();
@@ -25,23 +25,6 @@ describe('Reducer: cameraSlice', () => {
       similarCameras: [],
       areSimilarCamerasLoading: false,
     };
-  });
-
-  it('should update cameras by load cameras', () => {
-    expect(
-      camerasSlice.reducer(state, {
-        type: loadCameras.fulfilled.type,
-        payload: cameras,
-      })
-    ).toEqual({
-      cameras: cameras,
-      areCamerasLoading: false,
-      camerasAmount: 0,
-      cameraById: null,
-      isCameraByIdLoading: false,
-      similarCameras: [],
-      areSimilarCamerasLoading: false,
-    });
   });
 
   it('should update cameras and camerasAmount by load cameras with params', () => {

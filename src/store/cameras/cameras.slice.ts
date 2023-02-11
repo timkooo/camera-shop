@@ -3,7 +3,7 @@ import { NameSpace } from '../../const';
 import { Camera } from '../../types/camera';
 import {
   loadCameraById,
-  loadCameras, loadCamerasWithParams, loadSimilarCameras,
+  loadCamerasWithParams, loadSimilarCameras,
 } from '../api-actions';
 
 export type InitialState = {
@@ -32,17 +32,6 @@ export const camerasSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(loadCameras.fulfilled, (state, action) => {
-        state.cameras = action.payload;
-        state.areCamerasLoading = false;
-      })
-      .addCase(loadCameras.pending, (state) => {
-        state.areCamerasLoading = true;
-      })
-      .addCase(loadCameras.rejected, (state) => {
-        state.cameras = [];
-        state.areCamerasLoading = false;
-      })
       .addCase(loadCamerasWithParams.fulfilled, (state, action) => {
         state.cameras = action.payload.data;
         state.camerasAmount = Number(action.payload.headers['x-total-count']);

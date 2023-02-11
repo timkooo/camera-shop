@@ -8,7 +8,7 @@ import { api } from '../services/api';
 import { APIRoute, NameSpace } from '../const';
 import { RootState } from '../types/store';
 import { makeFakeCamera, makeFakeCameras, makeFakeReview, makeFakeReviewPost, makeFakeReviews } from '../utils/mocks';
-import { loadCameraById, loadCameras, loadCamerasWithParams, loadReviews, loadSimilarCameras, postReview } from './api-actions';
+import { loadCameraById, loadCamerasWithParams, loadReviews, loadSimilarCameras, postReview } from './api-actions';
 
 describe('Async actions', () => {
   const mockAPI = new MockAdapter(api);
@@ -20,24 +20,6 @@ describe('Async actions', () => {
       Action,
       ThunkDispatch<RootState, typeof api, Action>
     >(middlewares);
-
-  it('should dispatch loadCameras when GET /cameras', async () => {
-    const mockCameras = makeFakeCameras();
-    mockAPI
-      .onGet(APIRoute.Cameras)
-      .reply(200, mockCameras);
-
-    const store = mockStore();
-
-    await store.dispatch(loadCameras());
-
-    const actions = store.getActions().map(({type}) => type);
-
-    expect(actions).toEqual([
-      loadCameras.pending.type,
-      loadCameras.fulfilled.type,
-    ]);
-  });
 
   it('should dispatch loadCamerasWithParams when GET /cameras', async () => {
     const mockCameras = makeFakeCameras();

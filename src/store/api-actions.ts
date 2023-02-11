@@ -7,14 +7,6 @@ import { RootState } from '../types/store';
 import { Review, ReviewPost } from '../types/review';
 import { Promo } from '../types/promo';
 
-export const loadCameras = createAsyncThunk(
-  `${NameSpace.Cameras}/loadCameras`,
-  async () => {
-    const { data } = await api.get<Camera[]>(APIRoute.Cameras);
-    return data;
-  }
-);
-
 export const loadCamerasWithParams = createAsyncThunk(
   `${NameSpace.Cameras}/loadCamerasWithParams`,
   async (_, { getState }) => {
