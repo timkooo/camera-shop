@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export const useModal = ( isVisible = false) => {
+export const useModal = ( isVisible = false ) => {
 
   const [modalVisible, setModalVisible] = useState(isVisible);
 

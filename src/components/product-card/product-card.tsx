@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Dispatch, FC } from 'react';
 import { Link } from 'react-router-dom';
 import { Camera } from '../../types/camera';
@@ -5,10 +6,11 @@ import { Camera } from '../../types/camera';
 type ProductCardProps = {
   product: Camera;
   onSelectedProductChange: Dispatch<Camera | null>;
+  isActive?: boolean;
 }
 
-export const ProductCard: FC<ProductCardProps> = ({product, onSelectedProductChange}) => (
-  <div className="product-card">
+export const ProductCard: FC<ProductCardProps> = ({product, onSelectedProductChange, isActive = false}) => (
+  <div className={classNames('product-card', {'is-active' : isActive})}>
     <div className="product-card__img">
       <picture>
         <source type="image/webp" srcSet={`/${product.previewImgWebp}, /${product.previewImgWebp2x}`} /><img src={product.previewImg} srcSet={`${product.previewImg2x} 2x`} width="280" height="240" alt="Ретрокамера «Das Auge IV»" />

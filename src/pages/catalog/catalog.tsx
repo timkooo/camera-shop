@@ -31,9 +31,7 @@ import {
   selectSorting,
 } from '../../store/application/application.selectors';
 import { Link, useParams } from 'react-router-dom';
-import { addToBasket } from '../../store/basket/basket.slice';
-import FocusLock from 'react-focus-lock';
-import { useModal } from '../../hooks/use-modal';
+import { ProductModal } from '../../components/product-modal/product-modal';
 
 export const Catalog = () => {
   const { pageNumber = 1 } = useParams();
@@ -130,13 +128,6 @@ export const Catalog = () => {
     }
   };
 
-  const handleAddItemToBasket = () => {
-    if (selectedProduct) {
-      dispatch(addToBasket(selectedProduct));
-    }
-    setSelectedProduct(null);
-  };
-
   const handleSortingFormChange = (
     evt: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -206,464 +197,389 @@ export const Catalog = () => {
     };
   }, [dispatch, filtersFormData, parameters, sortingFormData, priceFilterData]);
 
-  useModal(!!selectedProduct);
-
   if (areCamerasLoading) {
     return <div>LOADING</div>;
   }
 
   return (
-    <>
-      <main>
-        <div className="banner">
-          {promo ? (
-            <>
-              <picture>
-                <source
-                  type="image/webp"
-                  srcSet={`/${promo.previewImgWebp}, /${promo.previewImgWebp2x}`}
-                />
-                <img
-                  src={promo.previewImg}
-                  srcSet={`${promo.previewImg2x} 2x`}
-                  width="1280"
-                  height="280"
-                  alt="баннер"
-                />
-              </picture>
-              <p className="banner__info">
-                <span className="banner__message">Новинка!</span>
-                <span className="title title--h1">{promo.name}</span>
-                <span className="banner__text">
+    <main>
+      <div className="banner">
+        {promo ? (
+          <>
+            <picture>
+              <source
+                type="image/webp"
+                srcSet={`/${promo.previewImgWebp}, /${promo.previewImgWebp2x}`}
+              />
+              <img
+                src={promo.previewImg}
+                srcSet={`${promo.previewImg2x} 2x`}
+                width="1280"
+                height="280"
+                alt="баннер"
+              />
+            </picture>
+            <p className="banner__info">
+              <span className="banner__message">Новинка!</span>
+              <span className="title title--h1">{promo.name}</span>
+              <span className="banner__text">
                   Профессиональная камера от&nbsp;известного производителя
-                </span>
-                <Link className="btn" to={`${AppRoutes.Product}/${promo.id}`}>
+              </span>
+              <Link className="btn" to={`${AppRoutes.Product}/${promo.id}`}>
                   Подробнее
-                </Link>
-              </p>
-            </>
-          ) : (
-            <>
-              <picture>
-                <source
-                  type="image/webp"
-                  srcSet="/img/content/banner-bg.webp, /img/content/banner-bg@2x.webp 2x"
-                />
-                <img
-                  src="/img/content/banner-bg.jpg"
-                  srcSet="/img/content/banner-bg@2x.jpg 2x"
-                  width="1280"
-                  height="280"
-                  alt="баннер"
-                />
-              </picture>
-              <p className="banner__info">
-                <span className="banner__message">Could not load promo</span>
-              </p>
-            </>
-          )}
-        </div>
-        <div className="page-content">
-          <div className="breadcrumbs">
-            <div className="container">
-              <ul className="breadcrumbs__list">
-                <li className="breadcrumbs__item">
-                  <Link className="breadcrumbs__link" to="/">
+              </Link>
+            </p>
+          </>
+        ) : (
+          <>
+            <picture>
+              <source
+                type="image/webp"
+                srcSet="/img/content/banner-bg.webp, /img/content/banner-bg@2x.webp 2x"
+              />
+              <img
+                src="/img/content/banner-bg.jpg"
+                srcSet="/img/content/banner-bg@2x.jpg 2x"
+                width="1280"
+                height="280"
+                alt="баннер"
+              />
+            </picture>
+            <p className="banner__info">
+              <span className="banner__message">Could not load promo</span>
+            </p>
+          </>
+        )}
+      </div>
+      <div className="page-content">
+        <div className="breadcrumbs">
+          <div className="container">
+            <ul className="breadcrumbs__list">
+              <li className="breadcrumbs__item">
+                <Link className="breadcrumbs__link" to="/">
                     Главная
-                    <svg width="5" height="8" aria-hidden="true">
-                      <use xlinkHref="#icon-arrow-mini"></use>
-                    </svg>
-                  </Link>
-                </li>
-                <li className="breadcrumbs__item">
-                  <span className="breadcrumbs__link breadcrumbs__link--active">
+                  <svg width="5" height="8" aria-hidden="true">
+                    <use xlinkHref="#icon-arrow-mini"></use>
+                  </svg>
+                </Link>
+              </li>
+              <li className="breadcrumbs__item">
+                <span className="breadcrumbs__link breadcrumbs__link--active">
                     Каталог
-                  </span>
-                </li>
-              </ul>
-            </div>
+                </span>
+              </li>
+            </ul>
           </div>
-          <section className="catalog">
-            <div className="container">
-              <h1 className="title title--h2">Каталог фото- и видеотехники</h1>
-              <div className="page-content__columns">
-                <div className="catalog__aside">
-                  <div className="catalog-filter">
-                    <form action="#">
-                      <h2 className="visually-hidden">Фильтр</h2>
-                      <fieldset className="catalog-filter__block">
-                        <legend className="title title--h5">Цена, ₽</legend>
-                        <div className="catalog-filter__price-range">
-                          <div className="custom-input">
-                            <label>
-                              <input
-                                ref={priceFromRef}
-                                type="number"
-                                name="price"
-                                placeholder="от"
-                                onKeyDown={handleFromPriceChange}
-                                defaultValue={priceFilterData.price_gte}
-                              />
-                            </label>
-                          </div>
-                          <div className="custom-input">
-                            <label>
-                              <input
-                                ref={priceToRef}
-                                type="number"
-                                name="priceUp"
-                                placeholder="до"
-                                onKeyDown={handleToPriceChange}
-                                defaultValue={priceFilterData.price_lte}
-                              />
-                            </label>
-                          </div>
-                        </div>
-                      </fieldset>
-                      <fieldset className="catalog-filter__block">
-                        <legend className="title title--h5">Категория</legend>
-                        <div className="custom-checkbox catalog-filter__item">
+        </div>
+        <section className="catalog">
+          <div className="container">
+            <h1 className="title title--h2">Каталог фото- и видеотехники</h1>
+            <div className="page-content__columns">
+              <div className="catalog__aside">
+                <div className="catalog-filter">
+                  <form action="#">
+                    <h2 className="visually-hidden">Фильтр</h2>
+                    <fieldset className="catalog-filter__block">
+                      <legend className="title title--h5">Цена, ₽</legend>
+                      <div className="catalog-filter__price-range">
+                        <div className="custom-input">
                           <label>
                             <input
-                              type="checkbox"
-                              name="photocamera"
-                              checked={isFilterChecked('photocamera')}
-                              onChange={handleFilterFormChange}
+                              ref={priceFromRef}
+                              type="number"
+                              name="price"
+                              placeholder="от"
+                              onKeyDown={handleFromPriceChange}
+                              defaultValue={priceFilterData.price_gte}
                             />
-                            <span className="custom-checkbox__icon"></span>
-                            <span className="custom-checkbox__label">
-                              Фотокамера
-                            </span>
                           </label>
                         </div>
-                        <div className="custom-checkbox catalog-filter__item">
+                        <div className="custom-input">
                           <label>
                             <input
-                              type="checkbox"
-                              name="videocamera"
-                              checked={isFilterChecked('videocamera')}
-                              onChange={handleFilterFormChange}
+                              ref={priceToRef}
+                              type="number"
+                              name="priceUp"
+                              placeholder="до"
+                              onKeyDown={handleToPriceChange}
+                              defaultValue={priceFilterData.price_lte}
                             />
-                            <span className="custom-checkbox__icon"></span>
-                            <span className="custom-checkbox__label">
-                              Видеокамера
-                            </span>
                           </label>
-                        </div>
-                      </fieldset>
-                      <fieldset className="catalog-filter__block">
-                        <legend className="title title--h5">Тип камеры</legend>
-                        <div className="custom-checkbox catalog-filter__item">
-                          <label>
-                            <input
-                              type="checkbox"
-                              name="digital"
-                              checked={isFilterChecked('digital')}
-                              onChange={handleFilterFormChange}
-                            />
-                            <span className="custom-checkbox__icon"></span>
-                            <span className="custom-checkbox__label">
-                              Цифровая
-                            </span>
-                          </label>
-                        </div>
-                        <div className="custom-checkbox catalog-filter__item">
-                          <label>
-                            <input type="checkbox" name="film" disabled />
-                            <span className="custom-checkbox__icon"></span>
-                            <span className="custom-checkbox__label">
-                              Плёночная
-                            </span>
-                          </label>
-                        </div>
-                        <div className="custom-checkbox catalog-filter__item">
-                          <label>
-                            <input
-                              type="checkbox"
-                              name="snapshot"
-                              checked={isFilterChecked('snapshot')}
-                              onChange={handleFilterFormChange}
-                            />
-                            <span className="custom-checkbox__icon"></span>
-                            <span className="custom-checkbox__label">
-                              Моментальная
-                            </span>
-                          </label>
-                        </div>
-                        <div className="custom-checkbox catalog-filter__item">
-                          <label>
-                            <input
-                              type="checkbox"
-                              name="collection"
-                              checked
-                              disabled
-                            />
-                            <span className="custom-checkbox__icon"></span>
-                            <span className="custom-checkbox__label">
-                              Коллекционная
-                            </span>
-                          </label>
-                        </div>
-                      </fieldset>
-                      <fieldset className="catalog-filter__block">
-                        <legend className="title title--h5">Уровень</legend>
-                        <div className="custom-checkbox catalog-filter__item">
-                          <label>
-                            <input
-                              type="checkbox"
-                              name="zero"
-                              checked={isFilterChecked('zero')}
-                              onChange={handleFilterFormChange}
-                            />
-                            <span className="custom-checkbox__icon"></span>
-                            <span className="custom-checkbox__label">
-                              Нулевой
-                            </span>
-                          </label>
-                        </div>
-                        <div className="custom-checkbox catalog-filter__item">
-                          <label>
-                            <input
-                              type="checkbox"
-                              name="nonprofessional"
-                              checked={isFilterChecked('nonprofessional')}
-                              onChange={handleFilterFormChange}
-                            />
-                            <span className="custom-checkbox__icon"></span>
-                            <span className="custom-checkbox__label">
-                              Любительский
-                            </span>
-                          </label>
-                        </div>
-                        <div className="custom-checkbox catalog-filter__item">
-                          <label>
-                            <input
-                              type="checkbox"
-                              name="professional"
-                              checked={isFilterChecked('professional')}
-                              onChange={handleFilterFormChange}
-                            />
-                            <span className="custom-checkbox__icon"></span>
-                            <span className="custom-checkbox__label">
-                              Профессиональный
-                            </span>
-                          </label>
-                        </div>
-                      </fieldset>
-                      <button
-                        className="btn catalog-filter__reset-btn"
-                        type="reset"
-                        onClick={handleResetFilters}
-                      >
-                        Сбросить фильтры
-                      </button>
-                    </form>
-                  </div>
-                </div>
-                <div className="catalog__content">
-                  <div className="catalog-sort">
-                    <form action="#">
-                      <div className="catalog-sort__inner">
-                        <p className="title title--h5">Сортировать:</p>
-                        <div className="catalog-sort__type">
-                          <div className="catalog-sort__btn-text">
-                            <input
-                              type="radio"
-                              id="sortPrice"
-                              name="sort"
-                              value="price"
-                              onChange={handleSortingFormChange}
-                              checked={sorting._sort === 'price'}
-                            />
-                            <label htmlFor="sortPrice">по цене</label>
-                          </div>
-                          <div className="catalog-sort__btn-text">
-                            <input
-                              type="radio"
-                              id="sortPopular"
-                              name="sort"
-                              value="rating"
-                              onChange={handleSortingFormChange}
-                              checked={sorting._sort === 'rating'}
-                            />
-                            <label htmlFor="sortPopular">по популярности</label>
-                          </div>
-                        </div>
-                        <div className="catalog-sort__order">
-                          <div className="catalog-sort__btn catalog-sort__btn--up">
-                            <input
-                              type="radio"
-                              id="up"
-                              name="sort-icon"
-                              aria-label="По возрастанию"
-                              value="asc"
-                              onChange={handleSortingFormChange}
-                              checked={sorting._order === 'asc'}
-                            />
-                            <label htmlFor="up">
-                              <svg width="16" height="14" aria-hidden="true">
-                                <use xlinkHref="#icon-sort"></use>
-                              </svg>
-                            </label>
-                          </div>
-                          <div className="catalog-sort__btn catalog-sort__btn--down">
-                            <input
-                              type="radio"
-                              id="down"
-                              name="sort-icon"
-                              aria-label="По убыванию"
-                              value="desc"
-                              onChange={handleSortingFormChange}
-                              checked={sorting._order === 'desc'}
-                            />
-                            <label htmlFor="down">
-                              <svg width="16" height="14" aria-hidden="true">
-                                <use xlinkHref="#icon-sort"></use>
-                              </svg>
-                            </label>
-                          </div>
                         </div>
                       </div>
-                    </form>
-                  </div>
-                  <div className="cards catalog__cards">
-                    {cameras.length === 0 ? (
-                      <div>Sorry, there was an error loading data</div>
-                    ) : (
-                      cameras.map((camera) => (
-                        <ProductCard
-                          key={camera.id}
-                          product={camera}
-                          onSelectedProductChange={setSelectedProduct}
-                        />
-                      ))
-                    )}
-                  </div>
-                  <div className="pagination">
-                    <ul className="pagination__list">
-                      <li className="pagination__item">
-                        <Link
-                          className={classNames(
-                            'pagination__link',
-                            'pagination__link--text',
-                            { 'visually-hidden': Number(pageNumber) === 1 }
-                          )}
-                          to={`/catalog/page/${Number(pageNumber) - 1}`}
-                        >
-                          Назад
-                        </Link>
-                      </li>
-                      {Array.from({ length: pagesNumber }).map((_, index) => (
-                        // eslint-disable-next-line react/no-array-index-key
-                        <li key={ index } className="pagination__item">
-                          <Link
-                            className={classNames('pagination__link', {
-                              'pagination__link--active':
-                                Number(pageNumber) === index + 1,
-                            })}
-                            to={`/catalog/page/${index + 1}`}
-                          >
-                            {index + 1}
-                          </Link>
-                        </li>
-                      ))}
-                      <li className="pagination__item">
-                        <Link
-                          className={classNames(
-                            'pagination__link',
-                            'pagination__link--text',
-                            {
-                              'visually-hidden':
-                                Number(pageNumber) === pagesNumber,
-                            }
-                          )}
-                          to={`/catalog/page/${Number(pageNumber) + 1}`}
-                        >
-                          Далее
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
+                    </fieldset>
+                    <fieldset className="catalog-filter__block">
+                      <legend className="title title--h5">Категория</legend>
+                      <div className="custom-checkbox catalog-filter__item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="photocamera"
+                            checked={isFilterChecked('photocamera')}
+                            onChange={handleFilterFormChange}
+                          />
+                          <span className="custom-checkbox__icon"></span>
+                          <span className="custom-checkbox__label">
+                              Фотокамера
+                          </span>
+                        </label>
+                      </div>
+                      <div className="custom-checkbox catalog-filter__item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="videocamera"
+                            checked={isFilterChecked('videocamera')}
+                            onChange={handleFilterFormChange}
+                          />
+                          <span className="custom-checkbox__icon"></span>
+                          <span className="custom-checkbox__label">
+                              Видеокамера
+                          </span>
+                        </label>
+                      </div>
+                    </fieldset>
+                    <fieldset className="catalog-filter__block">
+                      <legend className="title title--h5">Тип камеры</legend>
+                      <div className="custom-checkbox catalog-filter__item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="digital"
+                            checked={isFilterChecked('digital')}
+                            onChange={handleFilterFormChange}
+                          />
+                          <span className="custom-checkbox__icon"></span>
+                          <span className="custom-checkbox__label">
+                              Цифровая
+                          </span>
+                        </label>
+                      </div>
+                      <div className="custom-checkbox catalog-filter__item">
+                        <label>
+                          <input type="checkbox" name="film" disabled />
+                          <span className="custom-checkbox__icon"></span>
+                          <span className="custom-checkbox__label">
+                              Плёночная
+                          </span>
+                        </label>
+                      </div>
+                      <div className="custom-checkbox catalog-filter__item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="snapshot"
+                            checked={isFilterChecked('snapshot')}
+                            onChange={handleFilterFormChange}
+                          />
+                          <span className="custom-checkbox__icon"></span>
+                          <span className="custom-checkbox__label">
+                              Моментальная
+                          </span>
+                        </label>
+                      </div>
+                      <div className="custom-checkbox catalog-filter__item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="collection"
+                            checked
+                            disabled
+                          />
+                          <span className="custom-checkbox__icon"></span>
+                          <span className="custom-checkbox__label">
+                              Коллекционная
+                          </span>
+                        </label>
+                      </div>
+                    </fieldset>
+                    <fieldset className="catalog-filter__block">
+                      <legend className="title title--h5">Уровень</legend>
+                      <div className="custom-checkbox catalog-filter__item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="zero"
+                            checked={isFilterChecked('zero')}
+                            onChange={handleFilterFormChange}
+                          />
+                          <span className="custom-checkbox__icon"></span>
+                          <span className="custom-checkbox__label">
+                              Нулевой
+                          </span>
+                        </label>
+                      </div>
+                      <div className="custom-checkbox catalog-filter__item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="nonprofessional"
+                            checked={isFilterChecked('nonprofessional')}
+                            onChange={handleFilterFormChange}
+                          />
+                          <span className="custom-checkbox__icon"></span>
+                          <span className="custom-checkbox__label">
+                              Любительский
+                          </span>
+                        </label>
+                      </div>
+                      <div className="custom-checkbox catalog-filter__item">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="professional"
+                            checked={isFilterChecked('professional')}
+                            onChange={handleFilterFormChange}
+                          />
+                          <span className="custom-checkbox__icon"></span>
+                          <span className="custom-checkbox__label">
+                              Профессиональный
+                          </span>
+                        </label>
+                      </div>
+                    </fieldset>
+                    <button
+                      className="btn catalog-filter__reset-btn"
+                      type="reset"
+                      onClick={handleResetFilters}
+                    >
+                        Сбросить фильтры
+                    </button>
+                  </form>
                 </div>
               </div>
-            </div>
-          </section>
-        </div>
-      </main>
-
-      <div className={classNames('modal', { 'is-active': selectedProduct })}>
-        <div
-          className="modal__wrapper"
-          onClick={() => setSelectedProduct(null)}
-        >
-          <div className="modal__overlay"></div>
-          <FocusLock>
-            <div
-              className="modal__content"
-              onClick={(evt) => evt.stopPropagation()}
-            >
-              <p className="title title--h4">Добавить товар в корзину</p>
-              <div className="basket-item basket-item--short">
-                <div className="basket-item__img">
-                  <picture>
-                    <source
-                      type="image/webp"
-                      srcSet={`/${selectedProduct?.previewImgWebp}, /${selectedProduct?.previewImgWebp2x}`}
-                    />
-                    <img
-                      src={selectedProduct?.previewImg}
-                      srcSet={`${selectedProduct?.previewImg2x} 2x`}
-                      width="140"
-                      height="120"
-                      alt={selectedProduct?.name}
-                    />
-                  </picture>
+              <div className="catalog__content">
+                <div className="catalog-sort">
+                  <form action="#">
+                    <div className="catalog-sort__inner">
+                      <p className="title title--h5">Сортировать:</p>
+                      <div className="catalog-sort__type">
+                        <div className="catalog-sort__btn-text">
+                          <input
+                            type="radio"
+                            id="sortPrice"
+                            name="sort"
+                            value="price"
+                            onChange={handleSortingFormChange}
+                            checked={sorting._sort === 'price'}
+                          />
+                          <label htmlFor="sortPrice">по цене</label>
+                        </div>
+                        <div className="catalog-sort__btn-text">
+                          <input
+                            type="radio"
+                            id="sortPopular"
+                            name="sort"
+                            value="rating"
+                            onChange={handleSortingFormChange}
+                            checked={sorting._sort === 'rating'}
+                          />
+                          <label htmlFor="sortPopular">по популярности</label>
+                        </div>
+                      </div>
+                      <div className="catalog-sort__order">
+                        <div className="catalog-sort__btn catalog-sort__btn--up">
+                          <input
+                            type="radio"
+                            id="up"
+                            name="sort-icon"
+                            aria-label="По возрастанию"
+                            value="asc"
+                            onChange={handleSortingFormChange}
+                            checked={sorting._order === 'asc'}
+                          />
+                          <label htmlFor="up">
+                            <svg width="16" height="14" aria-hidden="true">
+                              <use xlinkHref="#icon-sort"></use>
+                            </svg>
+                          </label>
+                        </div>
+                        <div className="catalog-sort__btn catalog-sort__btn--down">
+                          <input
+                            type="radio"
+                            id="down"
+                            name="sort-icon"
+                            aria-label="По убыванию"
+                            value="desc"
+                            onChange={handleSortingFormChange}
+                            checked={sorting._order === 'desc'}
+                          />
+                          <label htmlFor="down">
+                            <svg width="16" height="14" aria-hidden="true">
+                              <use xlinkHref="#icon-sort"></use>
+                            </svg>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
                 </div>
-                <div className="basket-item__description">
-                  <p className="basket-item__title">{selectedProduct?.name}</p>
-                  <ul className="basket-item__list">
-                    <li className="basket-item__list-item">
-                      <span className="basket-item__article">Артикул:</span>{' '}
-                      <span className="basket-item__number">{selectedProduct?.vendorCode}</span>
+                <div className="cards catalog__cards">
+                  {cameras.length === 0 ? (
+                    <div>Sorry, there was an error loading data</div>
+                  ) : (
+                    cameras.map((camera) => (
+                      <ProductCard
+                        key={camera.id}
+                        product={camera}
+                        onSelectedProductChange={setSelectedProduct}
+                      />
+                    ))
+                  )}
+                </div>
+                <div className="pagination">
+                  <ul className="pagination__list">
+                    <li className="pagination__item">
+                      <Link
+                        className={classNames(
+                          'pagination__link',
+                          'pagination__link--text',
+                          { 'visually-hidden': Number(pageNumber) === 1 }
+                        )}
+                        to={`/catalog/page/${Number(pageNumber) - 1}`}
+                      >
+                          Назад
+                      </Link>
                     </li>
-                    <li className="basket-item__list-item">
-                      {selectedProduct?.type}
-                    </li>
-                    <li className="basket-item__list-item">
-                      {selectedProduct?.level}
+                    {Array.from({ length: pagesNumber }).map((_, index) => (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <li key={ index } className="pagination__item">
+                        <Link
+                          className={classNames('pagination__link', {
+                            'pagination__link--active':
+                                Number(pageNumber) === index + 1,
+                          })}
+                          to={`/catalog/page/${index + 1}`}
+                        >
+                          {index + 1}
+                        </Link>
+                      </li>
+                    ))}
+                    <li className="pagination__item">
+                      <Link
+                        className={classNames(
+                          'pagination__link',
+                          'pagination__link--text',
+                          {
+                            'visually-hidden':
+                                Number(pageNumber) === pagesNumber,
+                          }
+                        )}
+                        to={`/catalog/page/${Number(pageNumber) + 1}`}
+                      >
+                          Далее
+                      </Link>
                     </li>
                   </ul>
-                  <p className="basket-item__price">
-                    <span className="visually-hidden">Цена:</span>{selectedProduct?.price.toLocaleString()} ₽
-                  </p>
                 </div>
               </div>
-              <div className="modal__buttons">
-                <button
-                  className="btn btn--purple modal__btn modal__btn--fit-width"
-                  type="button"
-                  onClick={handleAddItemToBasket}
-                >
-                  <svg width="24" height="16" aria-hidden="true">
-                    <use xlinkHref="#icon-add-basket"></use>
-                  </svg>
-                  Добавить в корзину
-                </button>
-              </div>
-              <button
-                className="cross-btn"
-                type="button"
-                aria-label="Закрыть попап"
-                onClick={() => setSelectedProduct(null)}
-              >
-                <svg width="10" height="10" aria-hidden="true">
-                  <use xlinkHref="#icon-close"></use>
-                </svg>
-              </button>
             </div>
-          </FocusLock>
-        </div>
+          </div>
+        </section>
       </div>
-    </>
+
+      <ProductModal product={selectedProduct} onProductSelect={setSelectedProduct}/>
+
+    </main>
   );
 };

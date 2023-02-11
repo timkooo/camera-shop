@@ -11,7 +11,6 @@ import {
   loadCameraById,
   loadReviews,
   loadSimilarCameras,
-  postReview,
 } from '../../store/api-actions';
 import {
   selectAreSimilarCamerasLoading,
@@ -20,11 +19,13 @@ import {
   selectSimilarCameras,
 } from '../../store/cameras/cameras.selectors';
 import { selectReviews } from '../../store/reviews/reviews.selectors';
-import { Review, ReviewPost } from '../../types/review';
-import FocusLock from 'react-focus-lock';
+import { Review } from '../../types/review';
 import { useModal } from '../../hooks/use-modal';
 import { Camera } from '../../types/camera';
-import { addToBasket } from '../../store/basket/basket.slice';
+import { ProductCard } from '../../components/product-card/product-card';
+import { ProductModal } from '../../components/product-modal/product-modal';
+import { ReviewModal } from '../../components/review-modal/review-modal';
+import { SuccessModal } from '../../components/success-modal/success-modal';
 
 export const Product = () => {
   const { id } = useParams();
@@ -47,14 +48,6 @@ export const Product = () => {
   const [selectedProduct, setSelectedProduct] = useState<Camera | null>(null);
   const [reviewModalVisible, reviewModalToggle] = useModal();
   const [successModalVisible, successModalToggle] = useModal();
-  const [reviewFormData, setReviewFormData] = useState<ReviewPost>({
-    userName: '',
-    advantage: '',
-    disadvantage: '',
-    review: '',
-    rating: 0,
-    cameraId: 0,
-  });
   const dispatch = useAppDispatch();
 
   const moveProductsRight = () => {
@@ -75,27 +68,6 @@ export const Product = () => {
     }
   };
 
-  const handleReviewFormChange = (
-    evt:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const { name, value }: { name: string; value: string | number } =
-      evt.target;
-    if (name === 'rating') {
-      setReviewFormData({ ...reviewFormData, [name]: Number(value) });
-      return;
-    }
-    setReviewFormData({ ...reviewFormData, [name]: value });
-  };
-
-  const handleAddItemToBasket = () => {
-    if (selectedProduct) {
-      dispatch(addToBasket(selectedProduct));
-    }
-    setSelectedProduct(null);
-  };
-
   const handleShowMoreReviews = () => {
     const remained = [...reviewsRemained];
     const toShow = [...reviewsToShow, ...remained.splice(0, REVIEWS_TO_SHOW)];
@@ -103,38 +75,7 @@ export const Product = () => {
     setReviewsToShow(toShow);
   };
 
-  const handlePostReview = async (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
-    await dispatch(postReview(reviewFormData));
-    dispatch(loadReviews(id));
-    reviewModalToggle();
-    if (camera) {
-      setReviewFormData({
-        userName: '',
-        advantage: '',
-        disadvantage: '',
-        review: '',
-        rating: 0,
-        cameraId: camera.id,
-      });
-    }
-    successModalToggle();
-  };
-
   const isProductActive = (index: number) => index <= activeProducts.end && index >= activeProducts.start;
-
-  useEffect(() => {
-    if (camera) {
-      setReviewFormData({
-        userName: '',
-        advantage: '',
-        disadvantage: '',
-        review: '',
-        rating: 0,
-        cameraId: camera.id,
-      });
-    }
-  }, [camera]);
 
   useEffect(() => {
     const remained = [...reviews];
@@ -153,10 +94,6 @@ export const Product = () => {
   useEffect(() => {
     window.history.replaceState('', document.title, `${window.location.pathname}#${currentTab}`);
   }, [id, currentTab]);
-
-  useModal(!!reviewModalVisible);
-  useModal(!!successModalVisible);
-  useModal(!!selectedProduct);
 
   if (isCameraByIdLoading) {
     return <div>LOADING</div>;
@@ -321,78 +258,7 @@ export const Product = () => {
                     {areSimilarCamerasLoading ? (
                       <div>LOADING</div>
                     ) : (
-                      similarCameras.map((similarCamera, index) => (
-                        <div
-                          key={similarCamera.id}
-                          className={classNames('product-card', {
-                            'is-active': isProductActive(index),
-                          })}
-                        >
-                          <div className="product-card__img">
-                            <picture>
-                              <source
-                                type="image/webp"
-                                srcSet={`/${similarCamera.previewImgWebp}, /${similarCamera.previewImgWebp2x}`}
-                              />
-                              <img
-                                src={similarCamera.previewImg}
-                                srcSet={`${similarCamera.previewImg2x} 2x`}
-                                width="280"
-                                height="240"
-                                alt="Фотоаппарат FastShot MR-5"
-                              />
-                            </picture>
-                          </div>
-                          <div className="product-card__info">
-                            <div className="rate product-card__rate">
-                              <svg width="17" height="16" aria-hidden="true">
-                                <use xlinkHref="#icon-full-star"></use>
-                              </svg>
-                              <svg width="17" height="16" aria-hidden="true">
-                                <use xlinkHref="#icon-full-star"></use>
-                              </svg>
-                              <svg width="17" height="16" aria-hidden="true">
-                                <use xlinkHref="#icon-full-star"></use>
-                              </svg>
-                              <svg width="17" height="16" aria-hidden="true">
-                                <use xlinkHref="#icon-full-star"></use>
-                              </svg>
-                              <svg width="17" height="16" aria-hidden="true">
-                                <use xlinkHref="#icon-star"></use>
-                              </svg>
-                              <p className="visually-hidden">
-                                Рейтинг: {similarCamera.rating}
-                              </p>
-                              <p className="rate__count">
-                                <span className="visually-hidden">
-                                  Всего оценок:
-                                </span>
-                                {similarCamera.reviewCount}
-                              </p>
-                            </div>
-                            <p className="product-card__title">{similarCamera.name}</p>
-                            <p className="product-card__price">
-                              <span className="visually-hidden">Цена:</span>
-                              {similarCamera.price.toLocaleString()} ₽
-                            </p>
-                          </div>
-                          <div className="product-card__buttons">
-                            <button
-                              className="btn btn--purple product-card__btn"
-                              type="button"
-                              onClick={() => setSelectedProduct(similarCamera)}
-                            >
-                              Купить
-                            </button>
-                            <Link
-                              className="btn btn--transparent"
-                              to={`/product/${similarCamera.id}`}
-                            >
-                              Подробнее
-                            </Link>
-                          </div>
-                        </div>
-                      ))
+                      similarCameras.map((similarCamera, index) => <ProductCard key={similarCamera.id} product={similarCamera} onSelectedProductChange={setSelectedProduct} isActive={isProductActive(index)}/>)
                     )}
                   </div>
                   <button
@@ -455,339 +321,9 @@ export const Product = () => {
           </div>
         </div>
 
-        <div
-          className={classNames('modal', { 'is-active': reviewModalVisible })}
-        >
-          <div className="modal__wrapper" onClick={reviewModalToggle}>
-            <div className="modal__overlay"></div>
-            <FocusLock group="focus-group">
-              <div
-                className="modal__content"
-                onClick={(evt) => evt.stopPropagation()}
-              >
-                <p className="title title--h4">Оставить отзыв</p>
-                <div className="form-review">
-                  <form method="post" onSubmit={handlePostReview}>
-                    <div className="form-review__rate">
-                      <fieldset className="rate form-review__item">
-                        <legend className="rate__caption">
-                          Рейтинг
-                          <svg width="9" height="9" aria-hidden="true">
-                            <use xlinkHref="#icon-snowflake"></use>
-                          </svg>
-                        </legend>
-                        <div className="rate__bar">
-                          <div className="rate__group">
-                            <input
-                              className="visually-hidden"
-                              id="star-5"
-                              name="rating"
-                              type="radio"
-                              value={5}
-                              onChange={handleReviewFormChange}
-                              checked={reviewFormData.rating === 5}
-                            />
-                            <label
-                              className="rate__label"
-                              htmlFor="star-5"
-                              title="Отлично"
-                            >
-                            </label>
-                            <input
-                              className="visually-hidden"
-                              id="star-4"
-                              name="rating"
-                              type="radio"
-                              value={4}
-                              onChange={handleReviewFormChange}
-                              checked={reviewFormData.rating === 4}
-                            />
-                            <label
-                              className="rate__label"
-                              htmlFor="star-4"
-                              title="Хорошо"
-                            >
-                            </label>
-                            <input
-                              className="visually-hidden"
-                              id="star-3"
-                              name="rating"
-                              type="radio"
-                              value={3}
-                              onChange={handleReviewFormChange}
-                              checked={reviewFormData.rating === 3}
-                            />
-                            <label
-                              className="rate__label"
-                              htmlFor="star-3"
-                              title="Нормально"
-                            >
-                            </label>
-                            <input
-                              className="visually-hidden"
-                              id="star-2"
-                              name="rating"
-                              type="radio"
-                              value={2}
-                              onChange={handleReviewFormChange}
-                              checked={reviewFormData.rating === 2}
-                            />
-                            <label
-                              className="rate__label"
-                              htmlFor="star-2"
-                              title="Плохо"
-                            >
-                            </label>
-                            <input
-                              className="visually-hidden"
-                              id="star-1"
-                              name="rating"
-                              type="radio"
-                              value={1}
-                              onChange={handleReviewFormChange}
-                              checked={reviewFormData.rating === 1}
-                            />
-                            <label
-                              className="rate__label"
-                              htmlFor="star-1"
-                              title="Ужасно"
-                            >
-                            </label>
-                          </div>
-                          <div className="rate__progress">
-                            <span className="rate__stars">
-                              {reviewFormData.rating}
-                            </span>{' '}
-                            <span>/</span>{' '}
-                            <span className="rate__all-stars">5</span>
-                          </div>
-                        </div>
-                        <p className="rate__message">Нужно оценить товар</p>
-                      </fieldset>
-                      <div className="custom-input form-review__item">
-                        <label>
-                          <span className="custom-input__label">
-                            Ваше имя
-                            <svg width="9" height="9" aria-hidden="true">
-                              <use xlinkHref="#icon-snowflake"></use>
-                            </svg>
-                          </span>
-                          <input
-                            type="text"
-                            name="userName"
-                            placeholder="Введите ваше имя"
-                            value={reviewFormData.userName}
-                            onChange={handleReviewFormChange}
-                            required
-                          />
-                        </label>
-                        <p className="custom-input__error">Нужно указать имя</p>
-                      </div>
-                      <div className="custom-input form-review__item">
-                        <label>
-                          <span className="custom-input__label">
-                            Достоинства
-                            <svg width="9" height="9" aria-hidden="true">
-                              <use xlinkHref="#icon-snowflake"></use>
-                            </svg>
-                          </span>
-                          <input
-                            type="text"
-                            name="advantage"
-                            placeholder="Основные преимущества товара"
-                            value={reviewFormData.advantage}
-                            onChange={handleReviewFormChange}
-                            required
-                          />
-                        </label>
-                        <p className="custom-input__error">
-                          Нужно указать достоинства
-                        </p>
-                      </div>
-                      <div className="custom-input form-review__item">
-                        <label>
-                          <span className="custom-input__label">
-                            Недостатки
-                            <svg width="9" height="9" aria-hidden="true">
-                              <use xlinkHref="#icon-snowflake"></use>
-                            </svg>
-                          </span>
-                          <input
-                            type="text"
-                            name="disadvantage"
-                            placeholder="Главные недостатки товара"
-                            value={reviewFormData.disadvantage}
-                            onChange={handleReviewFormChange}
-                            required
-                          />
-                        </label>
-                        <p className="custom-input__error">
-                          Нужно указать недостатки
-                        </p>
-                      </div>
-                      <div className="custom-textarea form-review__item">
-                        <label>
-                          <span className="custom-textarea__label">
-                            Комментарий
-                            <svg width="9" height="9" aria-hidden="true">
-                              <use xlinkHref="#icon-snowflake"></use>
-                            </svg>
-                          </span>
-                          <textarea
-                            name="review"
-                            minLength={5}
-                            placeholder="Поделитесь своим опытом покупки"
-                            value={reviewFormData.review}
-                            onChange={handleReviewFormChange}
-                          >
-                          </textarea>
-                        </label>
-                        <div className="custom-textarea__error">
-                          Нужно добавить комментарий
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      className="btn btn--purple form-review__btn"
-                      type="submit"
-                    >
-                      Отправить отзыв
-                    </button>
-                  </form>
-                </div>
-                <button
-                  className="cross-btn"
-                  type="button"
-                  aria-label="Закрыть попап"
-                  onClick={reviewModalToggle}
-                >
-                  <svg width="10" height="10" aria-hidden="true">
-                    <use xlinkHref="#icon-close"></use>
-                  </svg>
-                </button>
-              </div>
-            </FocusLock>
-          </div>
-        </div>
-
-        <div
-          className={classNames('modal', 'modal--narrow', {
-            'is-active': successModalVisible,
-          })}
-        >
-          <div className="modal__wrapper" onClick={successModalToggle}>
-            <div className="modal__overlay"></div>
-            <FocusLock group="focus-group">
-              <div
-                className="modal__content"
-                onClick={(evt) => evt.stopPropagation()}
-              >
-                <p className="title title--h4">Спасибо за отзыв</p>
-                <svg
-                  className="modal__icon"
-                  width="80"
-                  height="78"
-                  aria-hidden="true"
-                >
-                  <use xlinkHref="#icon-review-success"></use>
-                </svg>
-                <div className="modal__buttons">
-                  <button
-                    className="btn btn--purple modal__btn modal__btn--fit-width"
-                    type="button"
-                    onClick={successModalToggle}
-                  >
-                    Вернуться к покупкам
-                  </button>
-                </div>
-                <button
-                  className="cross-btn"
-                  type="button"
-                  aria-label="Закрыть попап"
-                  onClick={successModalToggle}
-                >
-                  <svg width="10" height="10" aria-hidden="true">
-                    <use xlinkHref="#icon-close"></use>
-                  </svg>
-                </button>
-              </div>
-            </FocusLock>
-          </div>
-        </div>
-
-        <div className={classNames('modal', { 'is-active': selectedProduct })}>
-          <div
-            className="modal__wrapper"
-            onClick={() => setSelectedProduct(null)}
-          >
-            <div className="modal__overlay"></div>
-            <FocusLock>
-              <div
-                className="modal__content"
-                onClick={(evt) => evt.stopPropagation()}
-              >
-                <p className="title title--h4">Добавить товар в корзину</p>
-                <div className="basket-item basket-item--short">
-                  <div className="basket-item__img">
-                    <picture>
-                      <source
-                        type="image/webp"
-                        srcSet={`/${selectedProduct?.previewImgWebp}, /${selectedProduct?.previewImgWebp2x}`}
-                      />
-                      <img
-                        src={selectedProduct?.previewImg}
-                        srcSet={`${selectedProduct?.previewImg2x} 2x`}
-                        width="140"
-                        height="120"
-                        alt={selectedProduct?.name}
-                      />
-                    </picture>
-                  </div>
-                  <div className="basket-item__description">
-                    <p className="basket-item__title">{selectedProduct?.name}</p>
-                    <ul className="basket-item__list">
-                      <li className="basket-item__list-item">
-                        <span className="basket-item__article">Артикул:</span>{' '}
-                        <span className="basket-item__number">{selectedProduct?.vendorCode}</span>
-                      </li>
-                      <li className="basket-item__list-item">
-                        {selectedProduct?.type}
-                      </li>
-                      <li className="basket-item__list-item">
-                        {selectedProduct?.level}
-                      </li>
-                    </ul>
-                    <p className="basket-item__price">
-                      <span className="visually-hidden">Цена:</span>{selectedProduct?.price.toLocaleString()} ₽
-                    </p>
-                  </div>
-                </div>
-                <div className="modal__buttons">
-                  <button
-                    className="btn btn--purple modal__btn modal__btn--fit-width"
-                    type="button"
-                    onClick={handleAddItemToBasket}
-                  >
-                    <svg width="24" height="16" aria-hidden="true">
-                      <use xlinkHref="#icon-add-basket"></use>
-                    </svg>
-                  Добавить в корзину
-                  </button>
-                </div>
-                <button
-                  className="cross-btn"
-                  type="button"
-                  aria-label="Закрыть попап"
-                  onClick={() => setSelectedProduct(null)}
-                >
-                  <svg width="10" height="10" aria-hidden="true">
-                    <use xlinkHref="#icon-close"></use>
-                  </svg>
-                </button>
-              </div>
-            </FocusLock>
-          </div>
-        </div>
+        <SuccessModal modalVisible={successModalVisible} onModalToggle={successModalToggle}/>
+        <ReviewModal product={camera} modalVisible={reviewModalVisible} onModalToggle={reviewModalToggle} afterModalToggle={successModalToggle}/>
+        <ProductModal product={selectedProduct} onProductSelect={setSelectedProduct}/>
 
       </main>
       <a className="up-btn" href="#header">
