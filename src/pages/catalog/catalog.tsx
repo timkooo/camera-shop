@@ -9,7 +9,6 @@ import {
 } from '../../store/cameras/cameras.selectors';
 import { Camera } from '../../types/camera';
 import { Filters } from '../../types/filters';
-import classNames from 'classnames';
 import {
   Price,
   Sorting,
@@ -34,6 +33,7 @@ import {
 import { Link, useParams } from 'react-router-dom';
 import { ProductModal } from '../../components/product-modal/product-modal';
 import { useModal } from '../../hooks/use-modal';
+import { Pagination } from '../../components/pagination/pagination';
 
 export const Catalog = () => {
   const { pageNumber = 1 } = useParams();
@@ -44,7 +44,7 @@ export const Catalog = () => {
   const camerasAmount = useAppSelector(selectCamerasAmount);
   const sorting = useAppSelector(selectSorting);
   const [selectedProduct, setSelectedProduct] = useState<Camera | null>(null);
-  const [pagesNumber, setPagesNumber] = useState<number>(1);
+  const [pagesAmount, setPagesAmount] = useState<number>(1);
   const [filtersFormData, setFiltersFormData] = useState<Filters>({});
   const [sortingFormData, setSortingFormData] = useState<Sorting>(sorting);
   const [filtersList, setFiltersList] = useState<string[]>([]);
@@ -176,7 +176,7 @@ export const Catalog = () => {
   }, [dispatch, sortingFormData]);
 
   useEffect(() => {
-    setPagesNumber(countPageNumber);
+    setPagesAmount(countPageNumber);
   }, [dispatch, camerasAmount]);
 
   useEffect(() => {
@@ -533,50 +533,9 @@ export const Catalog = () => {
                     ))
                   )}
                 </div>
-                <div className="pagination">
-                  <ul className="pagination__list">
-                    <li className="pagination__item">
-                      <Link
-                        className={classNames(
-                          'pagination__link',
-                          'pagination__link--text',
-                          { 'visually-hidden': Number(pageNumber) === 1 }
-                        )}
-                        to={`/catalog/page/${Number(pageNumber) - 1}`}
-                      >
-                          Назад
-                      </Link>
-                    </li>
-                    {Array.from({ length: pagesNumber }, (v, k) => k + 1).map((element, index) => (
-                      <li key={ element } className="pagination__item">
-                        <Link
-                          className={classNames('pagination__link', {
-                            'pagination__link--active':
-                                Number(pageNumber) === index + 1,
-                          })}
-                          to={`/catalog/page/${index + 1}`}
-                        >
-                          {index + 1}
-                        </Link>
-                      </li>
-                    ))}
-                    <li className="pagination__item">
-                      <Link
-                        className={classNames(
-                          'pagination__link',
-                          'pagination__link--text',
-                          {
-                            'visually-hidden':
-                                Number(pageNumber) === pagesNumber,
-                          }
-                        )}
-                        to={`/catalog/page/${Number(pageNumber) + 1}`}
-                      >
-                          Далее
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
+
+                <Pagination pageNumber={Number(pageNumber)} pagesAmount={pagesAmount} />
+
               </div>
             </div>
           </div>
