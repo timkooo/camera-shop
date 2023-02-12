@@ -1,26 +1,30 @@
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import {render, screen} from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { makeFakeReview } from '../../utils/mocks';
+import { Pagination } from './pagination';
+import { NameSpace } from '../../const';
 import { MemoryRouter } from 'react-router-dom';
-import { ReviewCard } from './review-card';
 
 const mockStore = configureMockStore();
-const fakeReview = makeFakeReview();
 
-describe('Component: ReviewCard', () => {
+describe('Component: Pagination', () => {
   it('should render correctly', () => {
-
-    const store = mockStore();
+    const store = mockStore({
+      [NameSpace.Cameras]: {
+        camerasAmount: 40,
+      }
+    });
 
     render(
       <MemoryRouter>
         <Provider store={store}>
-          <ReviewCard review={fakeReview}/>
+          <Pagination pageNumber={1} />
         </Provider>
       </MemoryRouter>
     );
 
-    expect(screen.getByText(fakeReview.review)).toBeInTheDocument();
+    const buttons = screen.getAllByRole('link');
+
+    expect(buttons.length).toBe(7);
   });
 });

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable camelcase */
 import {Action} from 'redux';
 import thunk, {ThunkDispatch} from 'redux-thunk';
 import MockAdapter from 'axios-mock-adapter';
@@ -30,8 +28,8 @@ describe('Async actions', () => {
     const store = mockStore( {
       [NameSpace.Application]: {
         price: {
-          price_gte: 6000,
-          price_lte: 8000,
+          'price_gte': 6000,
+          'price_lte': 8000,
         },
         filters: {},
         sorting: {
@@ -44,7 +42,7 @@ describe('Async actions', () => {
 
     await store.dispatch(loadCamerasWithParams());
 
-    const actions = store.getActions().map(({type}) => type);
+    const actions = store.getActions().map(({type}) => type as string);
 
     expect(actions).toEqual([
       loadCamerasWithParams.pending.type,
@@ -62,7 +60,7 @@ describe('Async actions', () => {
 
     await store.dispatch(loadCameraById(mockCamera.id.toString()));
 
-    const actions = store.getActions().map(({type}) => type);
+    const actions = store.getActions().map(({type}) => type as string);
 
     expect(actions).toEqual([
       loadCameraById.pending.type,
@@ -80,7 +78,7 @@ describe('Async actions', () => {
 
     await store.dispatch(loadSimilarCameras(mockCameras[0].id.toString()));
 
-    const actions = store.getActions().map(({type}) => type);
+    const actions = store.getActions().map(({type}) => type as string);
 
     expect(actions).toEqual([
       loadSimilarCameras.pending.type,
@@ -98,7 +96,7 @@ describe('Async actions', () => {
 
     await store.dispatch(loadReviews(mockReviews[0].cameraId.toString()));
 
-    const actions = store.getActions().map(({type}) => type);
+    const actions = store.getActions().map(({type}) => type as string);
 
     expect(actions).toEqual([
       loadReviews.pending.type,
@@ -118,7 +116,7 @@ describe('Async actions', () => {
 
     await store.dispatch(postReview(mockReviewPost));
 
-    const actions = store.getActions().map(({type}) => type);
+    const actions = store.getActions().map(({type}) => type as string);
 
     expect(actions).toEqual([
       postReview.pending.type,
