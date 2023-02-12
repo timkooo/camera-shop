@@ -1,18 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
 import { loadPromo } from '../../store/api-actions';
-import {
-  Sorting,
-  updateSorting,
-} from '../../store/application/application.slice';
-import {
-  AppRoutes,
-  getSortingCategory,
-} from '../../const';
-import {
-  selectPromo,
-  selectSorting,
-} from '../../store/application/application.selectors';
+import { Sorting, updateSorting } from '../../store/application/application.slice';
+import { AppRoutes, getSortingCategory } from '../../const';
+import { selectPromo, selectSorting } from '../../store/application/application.selectors';
 import { Link, useParams } from 'react-router-dom';
 import { Pagination } from '../../components/pagination/pagination';
 import { ProductsList } from '../../components/products-list/products-list';
