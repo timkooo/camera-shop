@@ -1,19 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ProductCard } from '../../components/product-card/product-card';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
-import { loadCamerasWithParams, loadPromo } from '../../store/api-actions';
-import {
-  selectCameras,
-  selectCamerasAmount,
-  selectAreCamerasLoading,
-} from '../../store/cameras/cameras.selectors';
+import { loadPromo } from '../../store/api-actions';
 import { Camera } from '../../types/camera';
 import { Filters } from '../../types/filters';
 import {
   Price,
   Sorting,
   updateFilters,
-  updateParameters,
   updatePrice,
   updateSorting,
 } from '../../store/application/application.slice';
@@ -22,52 +15,27 @@ import {
   getCategoryName,
   getFilterName,
   getSortingCategory,
-  PRODUCTS_PER_PAGE,
   SortingTypes,
 } from '../../const';
 import {
-  selectParameters,
   selectPromo,
   selectSorting,
 } from '../../store/application/application.selectors';
 import { Link, useParams } from 'react-router-dom';
-import { ProductModal } from '../../components/product-modal/product-modal';
-import { useModal } from '../../hooks/use-modal';
 import { Pagination } from '../../components/pagination/pagination';
+import { ProductsList } from '../../components/products-list/products-list';
 
 export const Catalog = () => {
-  const { pageNumber = 1 } = useParams();
+  const { pageNumber = '1' } = useParams();
   const promo = useAppSelector(selectPromo);
-  const areCamerasLoading = useAppSelector(selectAreCamerasLoading);
-  const cameras = useAppSelector(selectCameras);
-  const parameters = useAppSelector(selectParameters);
-  const camerasAmount = useAppSelector(selectCamerasAmount);
   const sorting = useAppSelector(selectSorting);
-  const [selectedProduct, setSelectedProduct] = useState<Camera | null>(null);
-  const [pagesAmount, setPagesAmount] = useState<number>(1);
   const [filtersFormData, setFiltersFormData] = useState<Filters>({});
   const [sortingFormData, setSortingFormData] = useState<Sorting>(sorting);
   const [filtersList, setFiltersList] = useState<string[]>([]);
   const [priceFilterData, setPriceFilterData] = useState<Price>({});
-  const [productModalVisible, productModalToggle] = useModal();
   const priceFromRef = useRef<HTMLInputElement>(null);
   const priceToRef = useRef<HTMLInputElement>(null);
-  const camerasLimit = PRODUCTS_PER_PAGE;
   const dispatch = useAppDispatch();
-  const mounted = useRef(false);
-
-  const countPageNumber = () => Math.ceil(camerasAmount / camerasLimit);
-
-  const productsToShow = () => {
-    const start = (Number(pageNumber) - 1) * camerasLimit;
-    const end = start + camerasLimit;
-    const params = {
-      ...parameters,
-      _start: start.toString(),
-      _end: end.toString(),
-    };
-    return params;
-  };
 
   const handleFilterFormChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { name }: { name: string; value: string | number } =
@@ -164,10 +132,6 @@ export const Catalog = () => {
   };
 
   useEffect(() => {
-    dispatch(updateParameters(productsToShow()));
-  }, [dispatch, pageNumber]);
-
-  useEffect(() => {
     dispatch(updatePrice(priceFilterData));
   }, [dispatch, priceFilterData]);
 
@@ -176,36 +140,12 @@ export const Catalog = () => {
   }, [dispatch, sortingFormData]);
 
   useEffect(() => {
-    setPagesAmount(countPageNumber);
-  }, [dispatch, camerasAmount]);
-
-  useEffect(() => {
     dispatch(updateFilters(filtersFormData));
   }, [dispatch, filtersFormData]);
 
   useEffect(() => {
     dispatch(loadPromo());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (mounted.current === true || areCamerasLoading) {
-      return;
-    }
-    mounted.current = true;
-    dispatch(loadCamerasWithParams());
-    return () => {
-      mounted.current = false;
-    };
-  }, [dispatch, filtersFormData, parameters, sortingFormData, priceFilterData]);
-
-  const handleProductSelection = (product: Camera) => {
-    setSelectedProduct(product);
-    productModalToggle();
-  };
-
-  if (areCamerasLoading) {
-    return <div>LOADING</div>;
-  }
 
   return (
     <main>
@@ -520,29 +460,15 @@ export const Catalog = () => {
                     </div>
                   </form>
                 </div>
-                <div className="cards catalog__cards">
-                  {cameras.length === 0 ? (
-                    <div>Sorry, there was an error loading data</div>
-                  ) : (
-                    cameras.map((camera) => (
-                      <ProductCard
-                        key={camera.id}
-                        product={camera}
-                        onSelectedProductChange={() => handleProductSelection(camera)}
-                      />
-                    ))
-                  )}
-                </div>
 
-                <Pagination pageNumber={Number(pageNumber)} pagesAmount={pagesAmount} />
+                <ProductsList pageNumber={pageNumber}/>
+                <Pagination pageNumber={Number(pageNumber)}/>
 
               </div>
             </div>
           </div>
         </section>
       </div>
-
-      <ProductModal product={selectedProduct} modalVisible={productModalVisible} onModalToggle={productModalToggle} onProductSelect={setSelectedProduct}/>
 
     </main>
   );
