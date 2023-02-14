@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { makeFakePromo } from '../../utils/mocks';
 import { loadPromo } from '../api-actions';
 import { applicationSlice, InitialState, updateFilters, updateParameters, updatePrice, updateSorting } from './application.slice';
@@ -12,8 +11,8 @@ describe('Reducer: applicationSlice', () => {
   beforeEach(() => {
     state = {
       price: {
-        price_gte: 6000,
-        price_lte: 8000,
+        'price_gte': 6000,
+        'price_lte': 8000,
       },
       filters: {},
       sorting: {
@@ -34,8 +33,8 @@ describe('Reducer: applicationSlice', () => {
       }))
     ).toEqual({
       price: {
-        price_gte: 6000,
-        price_lte: 8000,
+        'price_gte': 6000,
+        'price_lte': 8000,
       },
       filters: {
         type : ['digital', 'film'],
@@ -54,13 +53,13 @@ describe('Reducer: applicationSlice', () => {
   it('should update price filter', () => {
     expect(
       applicationSlice.reducer(state, updatePrice({
-        price_gte: 9000,
-        price_lte: 30000,
+        'price_gte': 9000,
+        'price_lte': 30000,
       }))
     ).toEqual({
       price: {
-        price_gte: 9000,
-        price_lte: 30000,
+        'price_gte': 9000,
+        'price_lte': 30000,
       },
       filters: {},
       sorting: {
@@ -81,8 +80,8 @@ describe('Reducer: applicationSlice', () => {
       }))
     ).toEqual({
       price: {
-        price_gte: 6000,
-        price_lte: 8000,
+        'price_gte': 6000,
+        'price_lte': 8000,
       },
       filters: {},
       sorting: {
@@ -103,8 +102,8 @@ describe('Reducer: applicationSlice', () => {
       }))
     ).toEqual({
       price: {
-        price_gte: 6000,
-        price_lte: 8000,
+        'price_gte': 6000,
+        'price_lte': 8000,
       },
       filters: {},
       sorting: {
@@ -128,8 +127,8 @@ describe('Reducer: applicationSlice', () => {
       })
     ).toEqual({
       price: {
-        price_gte: 6000,
-        price_lte: 8000,
+        'price_gte': 6000,
+        'price_lte': 8000,
       },
       filters: {},
       sorting: {

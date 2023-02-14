@@ -37,7 +37,7 @@ export const Catalog = () => {
     <main>
       <div className="banner">
         {promo ? (
-          <>
+          <React.Fragment>
             <picture>
               <source
                 type="image/webp"
@@ -61,9 +61,9 @@ export const Catalog = () => {
                   Подробнее
               </Link>
             </p>
-          </>
+          </React.Fragment>
         ) : (
-          <>
+          <React.Fragment>
             <picture>
               <source
                 type="image/webp"
@@ -80,7 +80,7 @@ export const Catalog = () => {
             <p className="banner__info">
               <span className="banner__message">Could not load promo</span>
             </p>
-          </>
+          </React.Fragment>
         )}
       </div>
       <div className="page-content">

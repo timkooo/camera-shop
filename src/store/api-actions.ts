@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { APIRoute, NameSpace } from '../const';
 import { api } from '../services/api';
@@ -22,9 +21,13 @@ export const loadCamerasWithParams = createAsyncThunk(
 
 export const loadCameraById = createAsyncThunk(
   `${NameSpace.Cameras}/loadCameraById`,
-  async (cameraId: string | undefined) => {
-    const { data } = await api.get<Camera>(`${APIRoute.Cameras}/${cameraId}`);
-    return data;
+  async (cameraId: string | undefined, { rejectWithValue }) => {
+    if (typeof cameraId === 'string') {
+      const { data } = await api.get<Camera>(`${APIRoute.Cameras}/${cameraId}`);
+      return data;
+    } else {
+      return rejectWithValue('wrong id');
+    }
   }
 );
 
@@ -38,17 +41,25 @@ export const loadCamerasRange = createAsyncThunk(
 
 export const loadSimilarCameras = createAsyncThunk(
   `${NameSpace.Cameras}/loadSimilarCameras`,
-  async (cameraId: string | undefined) => {
-    const { data } = await api.get<Camera[]>(`${APIRoute.Cameras}/${cameraId}/similar`);
-    return data;
+  async (cameraId: string | undefined, { rejectWithValue }) => {
+    if (typeof cameraId === 'string') {
+      const { data } = await api.get<Camera[]>(`${APIRoute.Cameras}/${cameraId}/similar`);
+      return data;
+    } else {
+      return rejectWithValue('wrong id');
+    }
   }
 );
 
 export const loadReviews = createAsyncThunk(
   `${NameSpace.Reviews}/loadReviews`,
-  async (cameraId: string | undefined) => {
-    const { data } = await api.get<Review[]>(`${APIRoute.Cameras}/${cameraId}/reviews`);
-    return data;
+  async (cameraId: string | undefined, { rejectWithValue }) => {
+    if (typeof cameraId === 'string') {
+      const { data } = await api.get<Review[]>(`${APIRoute.Cameras}/${cameraId}/reviews`);
+      return data;
+    } else {
+      return rejectWithValue('wrong id');
+    }
   }
 );
 
@@ -66,4 +77,3 @@ export const loadPromo = createAsyncThunk(
     return data;
   }
 );
-

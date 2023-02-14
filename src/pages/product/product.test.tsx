@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-identical-title */
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import {render, screen} from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -11,7 +10,7 @@ import { Product } from './product';
 const mockStore = configureMockStore([thunk]);
 
 describe('Component: Product', () => {
-  it('should render correctly', () => {
+  it('should render correctly with reviews', () => {
     const camera = makeFakeCamera(3);
     const reviews = makeFakeReviews();
 
@@ -40,7 +39,7 @@ describe('Component: Product', () => {
     expect(screen.getByText(/Похожие товары/i)).toBeInTheDocument();
   });
 
-  it('should render correctly', () => {
+  it('should render correctly without reviews', () => {
     const store = mockStore({
       [NameSpace.Cameras]: {
         cameraById: null,
