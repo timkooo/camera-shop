@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { ReviewCard } from '../../components/review-card/review-card';
 import { AppRoutes, REVIEWS_TO_SHOW } from '../../const';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
@@ -26,6 +26,7 @@ import { SuccessModal } from '../../components/success-modal/success-modal';
 
 export const Product = () => {
   const { id } = useParams();
+  const { hash } = useLocation();
   const camera = useAppSelector(selectCameraById);
   const reviews = useAppSelector(selectReviews);
   const isCameraByIdLoading = useAppSelector(selectIsCameraByIdLoading);
@@ -37,7 +38,7 @@ export const Product = () => {
     start: 0,
     end: 2,
   });
-  const [currentTab, setCurrentTab] = useState<'specification' | 'description'>(
+  const [currentTab, setCurrentTab] = useState<string>(
     'description'
   );
   const [reviewsRemained, setReviewsRemained] = useState<Review[]>([]);
@@ -97,6 +98,12 @@ export const Product = () => {
   useEffect(() => {
     window.history.replaceState('', document.title, `${window.location.pathname}#${currentTab}`);
   }, [id, currentTab]);
+
+  useEffect(() => {
+    if (hash) {
+      setCurrentTab(hash.slice(1));
+    }
+  }, [hash]);
 
   if (isCameraByIdLoading) {
     return <div>LOADING</div>;
