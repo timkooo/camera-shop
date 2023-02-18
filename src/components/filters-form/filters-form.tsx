@@ -1,12 +1,15 @@
 import { useRef, useState, useEffect } from 'react';
-import { getCategoryName, getFilterName, SortingTypes } from '../../const';
-import { useAppDispatch } from '../../hooks/rtk-hooks';
+import { useSearchParams } from 'react-router-dom';
+import { getCategoryName, getFilterName, getKeyByValue, SortingTypes } from '../../const';
+import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
+import { selectFilters } from '../../store/application/application.selectors';
 import { Price, updatePrice, updateFilters } from '../../store/application/application.slice';
 import { Camera } from '../../types/camera';
 import { Filters } from '../../types/filters';
 
 export const FiltersForm = () => {
-  const [filtersFormData, setFiltersFormData] = useState<Filters>({});
+  const filters = useAppSelector(selectFilters);
+  const [urlParams, setUrlParams] = useSearchParams();
   const [filtersList, setFiltersList] = useState<string[]>([]);
   const [priceFilterData, setPriceFilterData] = useState<Price>({});
   const priceFromRef = useRef<HTMLInputElement>(null);
@@ -33,7 +36,8 @@ export const FiltersForm = () => {
         }
       }
       setFiltersList(() => list);
-      setFiltersFormData(() => data);
+      dispatch(updateFilters(data));
+      objectToParams(data);
     }
   };
 
@@ -41,7 +45,7 @@ export const FiltersForm = () => {
 
   const handleResetFilters = () => {
     setFiltersList(() => []);
-    setFiltersFormData(() => ({}));
+    dispatch(updateFilters({}));
     setPriceFilterData(() => ({}));
   };
 
@@ -60,6 +64,15 @@ export const FiltersForm = () => {
     }
   };
 
+  const objectToParams = <K extends Filters, T extends keyof K, N extends K[T][]>(filtersSet : K) => {
+    const params: [string, string][] = [];
+    Object.keys(filtersSet).map((filterCategory) => {
+      (filtersSet[filterCategory as T] as N).map((filterValue) => params.push([filterCategory, filterValue as string]));
+    });
+    const seachParams = new URLSearchParams(params);
+    setUrlParams(seachParams);
+  };
+
   const handleToPriceChange = (evt: React.KeyboardEvent) => {
     if (evt.key === 'Enter') {
       if (Number(priceToRef.current?.value) === 0) {
@@ -75,36 +88,52 @@ export const FiltersForm = () => {
     }
   };
 
-  const addFilter = <K extends keyof Camera>(name: K, value: Camera[K]) => {
-    let filters = { ...filtersFormData } as Filters;
-    if (!filters[name]) {
-      filters = { ...filtersFormData, [name]: [] };
+  const addFilter = <K extends keyof Camera>(name: K, value: Camera[K], targetArray = filters) => {
+    let filterList = { ...targetArray } as Filters;
+    if (!filterList[name]) {
+      filterList = { ...targetArray, [name]: [] };
     }
-    (filters[name] as typeof value[]) = [
-      ...(filters[name] as typeof value[]),
+    (filterList[name] as typeof value[]) = [
+      ...(filterList[name] as typeof value[]),
       value,
     ];
-    return filters;
+    return filterList;
+  };
+
+  const paramsToObject = () => {
+    let data = {};
+    const filterList: string[] = [];
+    for (const [key, value] of urlParams.entries()) {
+      data = addFilter(key as keyof Camera, value, data);
+      const filterKey = getKeyByValue(value);
+      if (filterKey) {
+        filterList.push(filterKey);
+      }
+    }
+    setFiltersList(filterList);
+    dispatch(updateFilters(data));
   };
 
   const removeFilter = <K extends keyof Camera>(name: K, value: Camera[K]) => {
-    const filterCategories = { ...filtersFormData } as Filters;
-    const filters = [...(filterCategories[name] as typeof value[])];
+    const filterCategories = { ...filters } as Filters;
+    const filterList = [...(filterCategories[name] as typeof value[])];
     const index = filterCategories[name]?.indexOf(value);
     if (index !== undefined && index > -1) {
-      (filters).splice(index, 1);
-      (filterCategories[name] as typeof value[]) = filters;
+      (filterList).splice(index, 1);
+      (filterCategories[name] as typeof value[]) = filterList;
     }
     return filterCategories;
   };
 
-  useEffect(() => {
-    dispatch(updateFilters(filtersFormData));
-  }, [dispatch, filtersFormData]);
+  const isDisabled = (filterName: string) => filtersList.includes(filterName);
 
   useEffect(() => {
     dispatch(updatePrice(priceFilterData));
   }, [dispatch, priceFilterData]);
+
+  useEffect(() => {
+    paramsToObject();
+  }, [urlParams]);
 
   return (
     <div className="catalog-filter">
@@ -148,6 +177,7 @@ export const FiltersForm = () => {
                 name="photocamera"
                 checked={isFilterChecked('photocamera')}
                 onChange={handleFilterFormChange}
+                disabled={isDisabled('videocamera')}
               />
               <span className="custom-checkbox__icon"></span>
               <span className="custom-checkbox__label">
@@ -162,6 +192,7 @@ export const FiltersForm = () => {
                 name="videocamera"
                 checked={isFilterChecked('videocamera')}
                 onChange={handleFilterFormChange}
+                disabled={isDisabled('photocamera')}
               />
               <span className="custom-checkbox__icon"></span>
               <span className="custom-checkbox__label">
@@ -179,6 +210,7 @@ export const FiltersForm = () => {
                 name="digital"
                 checked={isFilterChecked('digital')}
                 onChange={handleFilterFormChange}
+                disabled={isDisabled('photocamera')}
               />
               <span className="custom-checkbox__icon"></span>
               <span className="custom-checkbox__label">
@@ -188,7 +220,13 @@ export const FiltersForm = () => {
           </div>
           <div className="custom-checkbox catalog-filter__item">
             <label>
-              <input type="checkbox" name="film" disabled />
+              <input
+                type="checkbox"
+                name="film"
+                checked={isFilterChecked('film')}
+                onChange={handleFilterFormChange}
+                disabled={isDisabled('photocamera')}
+              />
               <span className="custom-checkbox__icon"></span>
               <span className="custom-checkbox__label">
                 Плёночная
@@ -202,6 +240,7 @@ export const FiltersForm = () => {
                 name="snapshot"
                 checked={isFilterChecked('snapshot')}
                 onChange={handleFilterFormChange}
+                disabled={isDisabled('videocamera')}
               />
               <span className="custom-checkbox__icon"></span>
               <span className="custom-checkbox__label">
@@ -214,8 +253,9 @@ export const FiltersForm = () => {
               <input
                 type="checkbox"
                 name="collection"
-                checked
-                disabled
+                checked={isFilterChecked('collection')}
+                onChange={handleFilterFormChange}
+                disabled={isDisabled('videocamera')}
               />
               <span className="custom-checkbox__icon"></span>
               <span className="custom-checkbox__label">

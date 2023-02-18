@@ -53,6 +53,7 @@ const sortingNamesToCategories: Record<string, string> = {
 export const getCategoryName = (name: string) => filterNamesToTypes[filterNames[name]];
 export const getFilterName = (name: string) => filterNames[name];
 export const getSortingCategory = (name: string) => sortingNamesToCategories[name];
+export const getKeyByValue = (value: string) => (Object.keys(filterNames)).find((key) => filterNames[key] === value);
 
 export enum SortingTypes {
   PriceUp = 'price_gte',

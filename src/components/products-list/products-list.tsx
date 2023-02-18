@@ -81,3 +81,5 @@ export const ProductsList = ({ pageNumber } : ProductsListProps) => {
     </React.Fragment>
   );
 };
+
+
