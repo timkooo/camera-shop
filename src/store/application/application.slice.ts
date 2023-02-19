@@ -53,6 +53,10 @@ export const applicationSlice = createSlice({
   reducers: {
     updateFilters(state, action: PayloadAction<Filters>) {
       state.filters = action.payload;
+      state.parameters = {
+        '_start' : '0',
+        '_end' : '9',
+      };
     },
     updateSorting(state, action: PayloadAction<Sorting>) {
       state.sorting = action.payload;
@@ -62,6 +66,10 @@ export const applicationSlice = createSlice({
     },
     updatePrice(state, action: PayloadAction<Price>) {
       state.price = action.payload;
+      state.parameters = {
+        '_start' : '0',
+        '_end' : '9',
+      };
     },
   },
   extraReducers(builder) {

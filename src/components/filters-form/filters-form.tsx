@@ -4,7 +4,7 @@ import { getCategoryName, getFilterName, getKeyByValue, SortingTypes } from '../
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
 import { loadMinMaxPrice } from '../../store/api-actions';
 import { selectFilters, selectMinMaxPrice, selectPrice } from '../../store/application/application.selectors';
-import { updatePrice, updateFilters } from '../../store/application/application.slice';
+import { updatePrice, updateFilters, Price } from '../../store/application/application.slice';
 import { Camera } from '../../types/camera';
 import { Filters } from '../../types/filters';
 
@@ -29,6 +29,7 @@ export const FiltersForm = () => {
       if (evt.target.checked === true) {
         data = addFilter(categoryName, filterName);
         list = [...list, name];
+        addUrlParam(categoryName, filterName);
       }
       if (evt.target.checked === false) {
         data = removeFilter(categoryName, filterName);
@@ -36,29 +37,59 @@ export const FiltersForm = () => {
         if (index > -1) {
           list.splice(index, 1);
         }
+        deleteUrlParam(categoryName, filterName);
       }
-      setFiltersList(() => list);
+      setFiltersList(list);
       dispatch(updateFilters(data));
-      objectToParams(data);
+      // const filterParams = filtersToParams(data);
+      // const priceParams = priceToParams();
+      // const seachParams = new URLSearchParams([...filterParams, ...priceParams]);
+      // setUrlParams(seachParams);
     }
   };
 
   const isFilterChecked = (name: string) => filtersList.includes(name);
 
+  const updateUrlParam = (key: string, value: string) => {
+    const params = new URLSearchParams(urlParams);
+    params.set(key, value);
+    setUrlParams(params);
+  };
+
+  const addUrlParam = (key: string, value: string) => {
+    const params = new URLSearchParams(urlParams);
+    params.append(key, value);
+    setUrlParams(params);
+  };
+
+  const deleteUrlParam = (key: string, value: string) => {
+    const params = [...urlParams];
+    const index = params.findIndex(([paramKey, paramValue]) => paramKey === key && paramValue === value);
+    params.splice(index, 1);
+    const filteredParams = new URLSearchParams(params);
+    setUrlParams(filteredParams);
+  };
+
   const handleResetFilters = () => {
     setFiltersList(() => []);
     dispatch(updateFilters({}));
     dispatch(updatePrice({}));
+    setUrlParams([]);
   };
 
-  const objectToParams = <K extends Filters, T extends keyof K, N extends K[T][]>(filtersSet : K) => {
-    const params: [string, string][] = [];
-    Object.keys(filtersSet).map((filterCategory) => {
-      (filtersSet[filterCategory as T] as N).map((filterValue) => params.push([filterCategory, filterValue as string]));
-    });
-    const seachParams = new URLSearchParams(params);
-    setUrlParams(seachParams);
-  };
+  // const filtersToParams = <K extends Filters, T extends keyof K, N extends K[T][]>(filtersSet : K) => {
+  //   const params: [string, string][] = [];
+  //   Object.keys(filtersSet).map((filterCategory) => {
+  //     (filtersSet[filterCategory as T] as N).map((filterValue) => params.push([filterCategory, filterValue as string]));
+  //   });
+  //   return params;
+  // };
+
+  // const priceToParams = () => {
+  //   const params: [string, string][] = [];
+  //   Object.entries(price).map(([key, value]) => params.push([key, value.toString()]));
+  //   return params;
+  // };
 
   const handleFromPriceChange = (evt: React.KeyboardEvent) => {
     if (evt.key === 'Enter') {
@@ -71,12 +102,14 @@ export const FiltersForm = () => {
           ...price,
           [SortingTypes.PriceUp]: minMaxPrice.minPrice,
         }));
+        updateUrlParam(SortingTypes.PriceUp, minMaxPrice.minPrice.toString());
         return;
       }
       dispatch(updatePrice({
         ...price,
         [SortingTypes.PriceUp]: Number(inputPrice),
       }));
+      updateUrlParam(SortingTypes.PriceUp, inputPrice ?? '');
     }
   };
 
@@ -91,12 +124,14 @@ export const FiltersForm = () => {
           ...price,
           [SortingTypes.PriceDown]: minMaxPrice.maxPrice,
         }));
+        updateUrlParam(SortingTypes.PriceDown, minMaxPrice.maxPrice.toString());
         return;
       }
       dispatch(updatePrice({
         ...price,
         [SortingTypes.PriceDown]: Number(inputPrice),
       }));
+      updateUrlParam(SortingTypes.PriceDown, inputPrice ?? '');
     }
   };
 
@@ -112,20 +147,6 @@ export const FiltersForm = () => {
     return filterList;
   };
 
-  const paramsToObject = () => {
-    let data = {};
-    const filterList: string[] = [];
-    for (const [key, value] of urlParams.entries()) {
-      data = addFilter(key as keyof Camera, value, data);
-      const filterKey = getKeyByValue(value);
-      if (filterKey) {
-        filterList.push(filterKey);
-      }
-    }
-    setFiltersList(filterList);
-    dispatch(updateFilters(data));
-  };
-
   const removeFilter = <K extends keyof Camera>(name: K, value: Camera[K]) => {
     const filterCategories = { ...filters } as Filters;
     const filterList = [...(filterCategories[name] as typeof value[])];
@@ -137,11 +158,45 @@ export const FiltersForm = () => {
     return filterCategories;
   };
 
+  const updateFiltersByUrlParams = () => {
+    let filtersData = {};
+    const priceData: Price = {...price};
+    const filterList: string[] = [];
+    for (const [key, value] of urlParams.entries()) {
+      if (key === SortingTypes.PriceDown || key === SortingTypes.PriceUp) {
+        priceData[key as keyof Price] = Number(value);
+        continue;
+      }
+      filtersData = addFilter(key as keyof Camera, value, filtersData);
+      const filterKey = getKeyByValue(value);
+      if (filterKey) {
+        filterList.push(filterKey);
+      }
+    }
+    setFiltersList(filterList);
+    dispatch(updateFilters(filtersData));
+    dispatch(updatePrice(priceData));
+  };
+
+  const hadleDefaultFromPriceValue = () => {
+    if (price[SortingTypes.PriceUp]) {
+      return price[SortingTypes.PriceUp];
+    }
+    return minMaxPrice.minPrice ? minMaxPrice.minPrice : '';
+  };
+
+  const hadleDefaultToPriceValue = () => {
+    if (price[SortingTypes.PriceDown]) {
+      return price[SortingTypes.PriceDown];
+    }
+    return minMaxPrice.maxPrice ? minMaxPrice.maxPrice : '';
+  };
+
   const isDisabled = (filterName: string) => filtersList.includes(filterName);
 
   useEffect(() => {
-    paramsToObject();
-  }, [urlParams]);
+    updateFiltersByUrlParams();
+  }, []);
 
   useEffect(() => {
     dispatch(loadMinMaxPrice());
@@ -162,7 +217,7 @@ export const FiltersForm = () => {
                   name="price"
                   placeholder="от"
                   onKeyDown={handleFromPriceChange}
-                  defaultValue={minMaxPrice.minPrice ? minMaxPrice.minPrice : ''}
+                  defaultValue={hadleDefaultFromPriceValue()}
                 />
               </label>
             </div>
@@ -174,7 +229,7 @@ export const FiltersForm = () => {
                   name="priceUp"
                   placeholder="до"
                   onKeyDown={handleToPriceChange}
-                  defaultValue={minMaxPrice.maxPrice ? minMaxPrice.maxPrice : ''}
+                  defaultValue={hadleDefaultToPriceValue()}
                 />
               </label>
             </div>

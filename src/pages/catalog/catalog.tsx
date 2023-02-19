@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
 import { loadPromo } from '../../store/api-actions';
 import { Sorting, updateSorting } from '../../store/application/application.slice';
 import { AppRoutes, getSortingCategory } from '../../const';
 import { selectPromo, selectSorting } from '../../store/application/application.selectors';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Pagination } from '../../components/pagination/pagination';
 import { ProductsList } from '../../components/products-list/products-list';
 import { FiltersForm } from '../../components/filters-form/filters-form';
 
 export const Catalog = () => {
   const { pageNumber = '1' } = useParams();
+  const [urlParams, setUrlParams] = useSearchParams();
   const promo = useAppSelector(selectPromo);
   const sorting = useAppSelector(selectSorting);
-  const [sortingFormData, setSortingFormData] = useState<Sorting>(sorting);
   const dispatch = useAppDispatch();
 
   const handleSortingFormChange = (
@@ -22,16 +22,34 @@ export const Catalog = () => {
     const { name, value }: { name: string; value: string } = evt.target;
     const sortingCategory = getSortingCategory(name);
     const sortingData = { ...sorting, [sortingCategory]: value };
-    setSortingFormData(sortingData);
+    dispatch(updateSorting(sortingData));
+    updateUrlParam(sortingCategory, value);
   };
 
-  useEffect(() => {
-    dispatch(updateSorting(sortingFormData));
-  }, [dispatch, sortingFormData]);
+  const updateUrlParam = (key: string, value: string) => {
+    const params = new URLSearchParams(urlParams);
+    params.set(key, value);
+    setUrlParams(params);
+  };
+
+  const updateSortingByUrlParams = () => {
+    const sortingData: Sorting = {...sorting};
+    for (const [key, value] of urlParams.entries()) {
+      if (key !== '_sort' && key !== '_order') {
+        continue;
+      }
+      sortingData[key as keyof Sorting] = value;
+    }
+    dispatch(updateSorting(sortingData));
+  };
 
   useEffect(() => {
     dispatch(loadPromo());
   }, [dispatch]);
+
+  useEffect(() => {
+    updateSortingByUrlParams();
+  }, []);
 
   return (
     <main>

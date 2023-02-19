@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { PRODUCTS_PER_PAGE } from '../../const';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
 import { selectCamerasAmount } from '../../store/cameras/cameras.selectors';
@@ -10,6 +10,7 @@ type PaginationProps = {
 };
 
 export const Pagination = ({ pageNumber }: PaginationProps) => {
+  const [urlParams] = useSearchParams();
   const camerasAmount = useAppSelector(selectCamerasAmount);
   const [pagesAmount, setPagesAmount] = useState<number>(1);
   const dispatch = useAppDispatch();
@@ -40,7 +41,7 @@ export const Pagination = ({ pageNumber }: PaginationProps) => {
                 className={classNames('pagination__link', {
                   'pagination__link--active': pageNumber === index + 1,
                 })}
-                to={`/catalog/page/${index + 1}`}
+                to={`/catalog/page/${index + 1}?${urlParams.toString()}`}
               >
                 {index + 1}
               </Link>

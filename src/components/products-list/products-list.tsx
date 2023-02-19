@@ -65,7 +65,7 @@ export const ProductsList = ({ pageNumber } : ProductsListProps) => {
     <React.Fragment>
       <div className="cards catalog__cards">
         {cameras.length === 0 ? (
-          <div>Sorry, there was an error loading data</div>
+          <div>Sorry, no products were found matching your search. Try to change filter</div>
         ) : (
           cameras.map((camera) => (
             <ProductCard
