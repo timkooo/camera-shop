@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
 import { useKeyPress } from '../../hooks/use-key-press';
 import { loadSearchResults } from '../../store/api-actions';
 import { selectSearchResults } from '../../store/cameras/cameras.selectors';
+import { resetSearchResults } from '../../store/cameras/cameras.slice';
 
 export const Search = () => {
   const searchResults = useAppSelector(selectSearchResults);
@@ -25,6 +26,13 @@ export const Search = () => {
   const handleSearchResultClick = (evt: React.MouseEvent<HTMLLIElement>, cameraId: number) => {
     evt.preventDefault();
     navigate(`product/${cameraId}`);
+  };
+
+  const handleResetSearch = () => {
+    if (searchInput.current) {
+      searchInput.current.value = '';
+      dispatch(resetSearchResults());
+    }
   };
 
   useEffect(() => {
@@ -72,7 +80,7 @@ export const Search = () => {
           ))}
         </ul>
       </form>
-      <button className="form-search__reset" type="reset">
+      <button className="form-search__reset" type="reset" onClick={handleResetSearch}>
         <svg width="10" height="10" aria-hidden="true">
           <use xlinkHref="#icon-close"></use>
         </svg><span className="visually-hidden">Сбросить поиск</span>

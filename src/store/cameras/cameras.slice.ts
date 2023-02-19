@@ -31,7 +31,11 @@ const initialState: InitialState = {
 export const camerasSlice = createSlice({
   name: NameSpace.Cameras,
   initialState,
-  reducers: {},
+  reducers: {
+    resetSearchResults(state) {
+      state.searchResults = [];
+    }
+  },
   extraReducers(builder) {
     builder
       .addCase(loadCamerasWithParams.fulfilled, (state, action) => {
@@ -74,3 +78,5 @@ export const camerasSlice = createSlice({
       });
   },
 });
+
+export const { resetSearchResults } = camerasSlice.actions;
