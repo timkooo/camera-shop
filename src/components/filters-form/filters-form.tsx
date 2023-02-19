@@ -2,18 +2,20 @@ import { useRef, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getCategoryName, getFilterName, getKeyByValue, SortingTypes } from '../../const';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
-import { selectFilters } from '../../store/application/application.selectors';
-import { Price, updatePrice, updateFilters } from '../../store/application/application.slice';
+import { loadMinMaxPrice } from '../../store/api-actions';
+import { selectFilters, selectMinMaxPrice, selectPrice } from '../../store/application/application.selectors';
+import { updatePrice, updateFilters } from '../../store/application/application.slice';
 import { Camera } from '../../types/camera';
 import { Filters } from '../../types/filters';
 
 export const FiltersForm = () => {
   const filters = useAppSelector(selectFilters);
+  const price = useAppSelector(selectPrice);
+  const minMaxPrice = useAppSelector(selectMinMaxPrice);
   const [urlParams, setUrlParams] = useSearchParams();
   const [filtersList, setFiltersList] = useState<string[]>([]);
-  const [priceFilterData, setPriceFilterData] = useState<Price>({});
-  const priceFromRef = useRef<HTMLInputElement>(null);
-  const priceToRef = useRef<HTMLInputElement>(null);
+  const priceFromRef = useRef<HTMLInputElement | null>(null);
+  const priceToRef = useRef<HTMLInputElement | null>(null);
   const dispatch = useAppDispatch();
 
   const handleFilterFormChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,22 +48,7 @@ export const FiltersForm = () => {
   const handleResetFilters = () => {
     setFiltersList(() => []);
     dispatch(updateFilters({}));
-    setPriceFilterData(() => ({}));
-  };
-
-  const handleFromPriceChange = (evt: React.KeyboardEvent) => {
-    if (evt.key === 'Enter') {
-      if (Number(priceFromRef.current?.value) === 0) {
-        const price = { ...priceFilterData };
-        delete price[SortingTypes.PriceUp];
-        setPriceFilterData(price);
-        return;
-      }
-      setPriceFilterData({
-        ...priceFilterData,
-        [SortingTypes.PriceUp]: Number(priceFromRef.current?.value),
-      });
-    }
+    dispatch(updatePrice({}));
   };
 
   const objectToParams = <K extends Filters, T extends keyof K, N extends K[T][]>(filtersSet : K) => {
@@ -73,18 +60,43 @@ export const FiltersForm = () => {
     setUrlParams(seachParams);
   };
 
-  const handleToPriceChange = (evt: React.KeyboardEvent) => {
+  const handleFromPriceChange = (evt: React.KeyboardEvent) => {
     if (evt.key === 'Enter') {
-      if (Number(priceToRef.current?.value) === 0) {
-        const price = { ...priceFilterData };
-        delete price[SortingTypes.PriceDown];
-        setPriceFilterData(price);
+      const inputPrice = priceFromRef.current?.value;
+      if (minMaxPrice.minPrice && Number(inputPrice) < minMaxPrice.minPrice) {
+        if (priceFromRef.current && priceFromRef.current.value) {
+          priceFromRef.current.value = minMaxPrice.minPrice.toString();
+        }
+        dispatch(updatePrice({
+          ...price,
+          [SortingTypes.PriceUp]: minMaxPrice.minPrice,
+        }));
         return;
       }
-      setPriceFilterData({
-        ...priceFilterData,
-        [SortingTypes.PriceDown]: Number(priceToRef.current?.value),
-      });
+      dispatch(updatePrice({
+        ...price,
+        [SortingTypes.PriceUp]: Number(inputPrice),
+      }));
+    }
+  };
+
+  const handleToPriceChange = (evt: React.KeyboardEvent) => {
+    if (evt.key === 'Enter') {
+      const inputPrice = priceToRef.current?.value;
+      if (minMaxPrice.maxPrice && Number(inputPrice) > minMaxPrice.maxPrice) {
+        if (priceToRef.current && priceToRef.current.value) {
+          priceToRef.current.value = minMaxPrice.maxPrice.toString();
+        }
+        dispatch(updatePrice({
+          ...price,
+          [SortingTypes.PriceDown]: minMaxPrice.maxPrice,
+        }));
+        return;
+      }
+      dispatch(updatePrice({
+        ...price,
+        [SortingTypes.PriceDown]: Number(inputPrice),
+      }));
     }
   };
 
@@ -128,12 +140,12 @@ export const FiltersForm = () => {
   const isDisabled = (filterName: string) => filtersList.includes(filterName);
 
   useEffect(() => {
-    dispatch(updatePrice(priceFilterData));
-  }, [dispatch, priceFilterData]);
-
-  useEffect(() => {
     paramsToObject();
   }, [urlParams]);
+
+  useEffect(() => {
+    dispatch(loadMinMaxPrice());
+  }, [dispatch]);
 
   return (
     <div className="catalog-filter">
@@ -150,7 +162,7 @@ export const FiltersForm = () => {
                   name="price"
                   placeholder="от"
                   onKeyDown={handleFromPriceChange}
-                  defaultValue={priceFilterData.price_gte}
+                  defaultValue={minMaxPrice.minPrice ? minMaxPrice.minPrice : ''}
                 />
               </label>
             </div>
@@ -162,7 +174,7 @@ export const FiltersForm = () => {
                   name="priceUp"
                   placeholder="до"
                   onKeyDown={handleToPriceChange}
-                  defaultValue={priceFilterData.price_lte}
+                  defaultValue={minMaxPrice.maxPrice ? minMaxPrice.maxPrice : ''}
                 />
               </label>
             </div>

@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { NameSpace } from '../../const';
 import { Filters } from '../../types/filters';
 import { Promo } from '../../types/promo';
-import { loadPromo } from '../api-actions';
+import { loadMinMaxPrice, loadPromo } from '../api-actions';
 
 export type StringRecord = { [key: string]: string };
 
@@ -16,8 +16,14 @@ export type Price = {
   price_lte?: number;
 };
 
+type MinMaxPrice = {
+  minPrice: number | null;
+  maxPrice: number | null;
+}
+
 export type InitialState = {
   price: Price;
+  minMaxPrice: MinMaxPrice;
   filters: Filters;
   sorting: Sorting;
   parameters: StringRecord;
@@ -27,6 +33,10 @@ export type InitialState = {
 
 const initialState: InitialState = {
   price: {},
+  minMaxPrice: {
+    minPrice: null,
+    maxPrice: null,
+  },
   filters: {},
   sorting: {
     _sort: 'price',
@@ -66,6 +76,9 @@ export const applicationSlice = createSlice({
       .addCase(loadPromo.rejected, (state) => {
         state.promo = null;
         state.isPromoLoading = false;
+      })
+      .addCase(loadMinMaxPrice.fulfilled, (state, action) => {
+        state.minMaxPrice = action.payload;
       });
   },
 });

@@ -88,3 +88,14 @@ export const loadSearchResults = createAsyncThunk(
     return data;
   }
 );
+
+export const loadMinMaxPrice = createAsyncThunk(
+  `${NameSpace.Application}/loadMinMaxPrice`,
+  async () => {
+    const min = await api.get<Camera[]>(`${APIRoute.Cameras}?_sort=price&_order=asc&_start=0&_end=1`);
+    const minPrice = min.data[0].price;
+    const max = await api.get<Camera[]>(`${APIRoute.Cameras}?_sort=price&_order=desc&_start=0&_end=1`);
+    const maxPrice = max.data[0].price;
+    return {minPrice , maxPrice};
+  }
+);

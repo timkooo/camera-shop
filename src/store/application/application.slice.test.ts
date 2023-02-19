@@ -14,6 +14,10 @@ describe('Reducer: applicationSlice', () => {
         'price_gte': 6000,
         'price_lte': 8000,
       },
+      minMaxPrice: {
+        minPrice: null,
+        maxPrice: null,
+      },
       filters: {},
       sorting: {
         _sort: 'price',

@@ -7,3 +7,4 @@ export const selectIsPromoLoading = (state: RootState) => state[NameSpace.Applic
 export const selectSorting = (state: RootState) => state[NameSpace.Application].sorting;
 export const selectPrice = (state: RootState) => state[NameSpace.Application].price;
 export const selectFilters = (state: RootState) => state[NameSpace.Application].filters;
+export const selectMinMaxPrice = (state: RootState) => state[NameSpace.Application].minMaxPrice;
