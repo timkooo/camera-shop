@@ -24,6 +24,7 @@ describe('Reducer: cameraSlice', () => {
       isCameraByIdLoading: false,
       similarCameras: [],
       areSimilarCamerasLoading: false,
+      searchResults: [],
     };
   });
 

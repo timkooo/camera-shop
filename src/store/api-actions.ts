@@ -77,3 +77,14 @@ export const loadPromo = createAsyncThunk(
     return data;
   }
 );
+
+export const loadSearchResults = createAsyncThunk(
+  `${NameSpace.Cameras}/loadSearchResults`,
+  async (param: string) => {
+    if (param === '') {
+      return [];
+    }
+    const { data } = await api.get<Camera[]>(`${APIRoute.Cameras}?name_like=${param}`);
+    return data;
+  }
+);

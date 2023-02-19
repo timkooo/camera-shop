@@ -8,3 +8,4 @@ export const selectCameraById = (state: RootState) => state[NameSpace.Cameras].c
 export const selectIsCameraByIdLoading = (state: RootState) => state[NameSpace.Cameras].isCameraByIdLoading;
 export const selectSimilarCameras = (state: RootState) => state[NameSpace.Cameras].similarCameras;
 export const selectAreSimilarCamerasLoading = (state: RootState) => state[NameSpace.Cameras].areSimilarCamerasLoading;
+export const selectSearchResults = (state: RootState) => state[NameSpace.Cameras].searchResults;

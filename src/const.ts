@@ -1,5 +1,6 @@
 export const REVIEWS_TO_SHOW = 3;
 export const PRODUCTS_PER_PAGE = 9;
+export const SEARCH_RESULTS_TO_SHOW = 4;
 
 export enum AppRoutes {
   Main = '/',

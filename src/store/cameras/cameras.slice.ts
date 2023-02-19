@@ -3,7 +3,7 @@ import { NameSpace } from '../../const';
 import { Camera } from '../../types/camera';
 import {
   loadCameraById,
-  loadCamerasWithParams, loadSimilarCameras,
+  loadCamerasWithParams, loadSearchResults, loadSimilarCameras,
 } from '../api-actions';
 
 export type InitialState = {
@@ -14,6 +14,7 @@ export type InitialState = {
   isCameraByIdLoading: boolean;
   similarCameras: Camera[];
   areSimilarCamerasLoading: boolean;
+  searchResults: Camera[];
 };
 
 const initialState: InitialState = {
@@ -24,6 +25,7 @@ const initialState: InitialState = {
   isCameraByIdLoading: false,
   similarCameras: [],
   areSimilarCamerasLoading: false,
+  searchResults: [],
 };
 
 export const camerasSlice = createSlice({
@@ -66,6 +68,9 @@ export const camerasSlice = createSlice({
       .addCase(loadSimilarCameras.rejected, (state) => {
         state.similarCameras = [];
         state.areSimilarCamerasLoading = false;
+      })
+      .addCase(loadSearchResults.fulfilled, (state, action) => {
+        state.searchResults = action.payload;
       });
   },
 });
