@@ -41,10 +41,6 @@ export const FiltersForm = () => {
       }
       setFiltersList(list);
       dispatch(updateFilters(data));
-      // const filterParams = filtersToParams(data);
-      // const priceParams = priceToParams();
-      // const seachParams = new URLSearchParams([...filterParams, ...priceParams]);
-      // setUrlParams(seachParams);
     }
   };
 
@@ -77,61 +73,55 @@ export const FiltersForm = () => {
     setUrlParams([]);
   };
 
-  // const filtersToParams = <K extends Filters, T extends keyof K, N extends K[T][]>(filtersSet : K) => {
-  //   const params: [string, string][] = [];
-  //   Object.keys(filtersSet).map((filterCategory) => {
-  //     (filtersSet[filterCategory as T] as N).map((filterValue) => params.push([filterCategory, filterValue as string]));
-  //   });
-  //   return params;
-  // };
-
-  // const priceToParams = () => {
-  //   const params: [string, string][] = [];
-  //   Object.entries(price).map(([key, value]) => params.push([key, value.toString()]));
-  //   return params;
-  // };
-
   const handleFromPriceChange = (evt: React.KeyboardEvent) => {
     if (evt.key === 'Enter') {
       const inputPrice = priceFromRef.current?.value;
+      const toPrice = priceToRef.current?.value;
       if (minMaxPrice.minPrice && Number(inputPrice) < minMaxPrice.minPrice) {
         if (priceFromRef.current && priceFromRef.current.value) {
           priceFromRef.current.value = minMaxPrice.minPrice.toString();
         }
-        dispatch(updatePrice({
-          ...price,
-          [SortingTypes.PriceUp]: minMaxPrice.minPrice,
-        }));
-        updateUrlParam(SortingTypes.PriceUp, minMaxPrice.minPrice.toString());
+        setPrice(SortingTypes.PriceUp, minMaxPrice.minPrice.toString());
         return;
       }
-      dispatch(updatePrice({
-        ...price,
-        [SortingTypes.PriceUp]: Number(inputPrice),
-      }));
-      updateUrlParam(SortingTypes.PriceUp, inputPrice ?? '');
+      if (inputPrice && toPrice && inputPrice > toPrice) {
+        if (priceFromRef.current && priceFromRef.current.value) {
+          priceFromRef.current.value = toPrice;
+        }
+        setPrice(SortingTypes.PriceUp, toPrice);
+        return;
+      }
+      setPrice(SortingTypes.PriceUp, inputPrice ?? '');
     }
+  };
+
+  const setPrice = (priceType : string, value: string) => {
+    dispatch(updatePrice({
+      ...price,
+      [priceType]: Number(value),
+    }));
+    updateUrlParam(SortingTypes.PriceDown, value);
   };
 
   const handleToPriceChange = (evt: React.KeyboardEvent) => {
     if (evt.key === 'Enter') {
       const inputPrice = priceToRef.current?.value;
+      const fromPrice = priceFromRef.current?.value;
       if (minMaxPrice.maxPrice && Number(inputPrice) > minMaxPrice.maxPrice) {
         if (priceToRef.current && priceToRef.current.value) {
           priceToRef.current.value = minMaxPrice.maxPrice.toString();
         }
-        dispatch(updatePrice({
-          ...price,
-          [SortingTypes.PriceDown]: minMaxPrice.maxPrice,
-        }));
-        updateUrlParam(SortingTypes.PriceDown, minMaxPrice.maxPrice.toString());
+        setPrice(SortingTypes.PriceDown, minMaxPrice.maxPrice.toString());
         return;
       }
-      dispatch(updatePrice({
-        ...price,
-        [SortingTypes.PriceDown]: Number(inputPrice),
-      }));
-      updateUrlParam(SortingTypes.PriceDown, inputPrice ?? '');
+      if (inputPrice && fromPrice && inputPrice < fromPrice) {
+        if (priceToRef.current && priceToRef.current.value) {
+          priceToRef.current.value = fromPrice;
+        }
+        setPrice(SortingTypes.PriceDown, fromPrice);
+        return;
+      }
+      setPrice(SortingTypes.PriceDown, inputPrice ?? '');
     }
   };
 
@@ -277,7 +267,6 @@ export const FiltersForm = () => {
                 name="digital"
                 checked={isFilterChecked('digital')}
                 onChange={handleFilterFormChange}
-                disabled={isDisabled('photocamera')}
               />
               <span className="custom-checkbox__icon"></span>
               <span className="custom-checkbox__label">
@@ -292,7 +281,7 @@ export const FiltersForm = () => {
                 name="film"
                 checked={isFilterChecked('film')}
                 onChange={handleFilterFormChange}
-                disabled={isDisabled('photocamera')}
+                disabled={isDisabled('videocamera')}
               />
               <span className="custom-checkbox__icon"></span>
               <span className="custom-checkbox__label">
@@ -322,7 +311,6 @@ export const FiltersForm = () => {
                 name="collection"
                 checked={isFilterChecked('collection')}
                 onChange={handleFilterFormChange}
-                disabled={isDisabled('videocamera')}
               />
               <span className="custom-checkbox__icon"></span>
               <span className="custom-checkbox__label">

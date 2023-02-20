@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PRODUCTS_PER_PAGE } from '../../const';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
 import { useModal } from '../../hooks/use-modal';
@@ -15,6 +16,7 @@ type ProductsListProps = {
 }
 
 export const ProductsList = ({ pageNumber } : ProductsListProps) => {
+  const [urlParams] = useSearchParams();
   const cameras = useAppSelector(selectCameras);
   const areCamerasLoading = useAppSelector(selectAreCamerasLoading);
   const parameters = useAppSelector(selectParameters);
@@ -24,6 +26,7 @@ export const ProductsList = ({ pageNumber } : ProductsListProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Camera | null>(null);
   const [productModalVisible, productModalToggle] = useModal();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const mounted = useRef(false);
 
   const handleProductSelection = (product: Camera) => {
@@ -56,6 +59,10 @@ export const ProductsList = ({ pageNumber } : ProductsListProps) => {
       mounted.current = false;
     };
   }, [dispatch, parameters, sorting, price, filters]);
+
+  useEffect(() => {
+    navigate(`/catalog/page/1?${urlParams.toString()}`);
+  }, [sorting, price, filters]);
 
   if (areCamerasLoading) {
     return <div>LOADING</div>;
