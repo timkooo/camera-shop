@@ -22,6 +22,11 @@ describe('Application Routing', () => {
     });
     const store = mockStore({
       [NameSpace.Application]: {
+        price: {},
+        minMaxPrice: {
+          minPrice: null,
+          maxPrice: null,
+        },
         promo: makeFakePromo(),
         parameters: {},
         sorting: {
@@ -33,6 +38,7 @@ describe('Application Routing', () => {
         cameras: makeFakeCameras(),
         areCamerasLoading: false,
         camerasAmount: 40,
+        searchResults: [],
       }
     });
 
@@ -51,6 +57,11 @@ describe('Application Routing', () => {
     });
     const store = mockStore({
       [NameSpace.Application]: {
+        price: {},
+        minMaxPrice: {
+          minPrice: null,
+          maxPrice: null,
+        },
         promo: makeFakePromo(),
         parameters: {},
         sorting: {
@@ -62,6 +73,7 @@ describe('Application Routing', () => {
         cameras: makeFakeCameras(),
         areCamerasLoading: false,
         camerasAmount: 40,
+        searchResults: [],
       }
     });
 
@@ -91,6 +103,11 @@ describe('Application Routing', () => {
 
     const store = mockStore({
       [NameSpace.Application]: {
+        price: {},
+        minMaxPrice: {
+          minPrice: null,
+          maxPrice: null,
+        },
         promo: makeFakePromo(),
         parameters: {},
         sorting: {
@@ -102,6 +119,7 @@ describe('Application Routing', () => {
         cameras: makeFakeCameras(),
         areCamerasLoading: false,
         camerasAmount: 40,
+        searchResults: [],
       }
     });
 
@@ -114,7 +132,7 @@ describe('Application Routing', () => {
     expect(history.location.pathname).toBe(`${AppRoutes.Catalog}/page/3`);
   });
 
-  it('Should render "Prodcut" when user navigate to "/product/:id"', () => {
+  it('Should render "Product" when user navigate to "/product/:id"', () => {
     const camera = makeFakeCamera(3);
 
     const router = createMemoryRouter(routesConfig, {
@@ -126,7 +144,8 @@ describe('Application Routing', () => {
         cameraById: camera,
         isCameraByIdLoading: false,
         similarCameras: makeFakeCameras(),
-        areSimilarCamerasLoading: false
+        areSimilarCamerasLoading: false,
+        searchResults: [],
       },
       [NameSpace.Reviews]: {
         reviews: makeFakeReviews(),
@@ -154,7 +173,8 @@ describe('Application Routing', () => {
         camera: camera,
         isCameraByIdLoading: false,
         similarCameras: makeFakeCameras(),
-        areSimilarCamerasLoading: false
+        areSimilarCamerasLoading: false,
+        searchResults: [],
       },
       [NameSpace.Basket]: {
         basket: makeFakeCameras(),

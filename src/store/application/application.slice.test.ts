@@ -40,6 +40,10 @@ describe('Reducer: applicationSlice', () => {
         'price_gte': 6000,
         'price_lte': 8000,
       },
+      minMaxPrice: {
+        minPrice: null,
+        maxPrice: null,
+      },
       filters: {
         type : ['digital', 'film'],
         level : ['zero', 'professional']
@@ -48,7 +52,10 @@ describe('Reducer: applicationSlice', () => {
         _sort: 'price',
         _order: 'asc',
       },
-      parameters: {},
+      parameters: {
+        _end: '9',
+        _start: '0',
+      },
       promo: null,
       isPromoLoading: false,
     });
@@ -65,12 +72,19 @@ describe('Reducer: applicationSlice', () => {
         'price_gte': 9000,
         'price_lte': 30000,
       },
+      minMaxPrice: {
+        minPrice: null,
+        maxPrice: null,
+      },
       filters: {},
       sorting: {
         _sort: 'price',
         _order: 'asc',
       },
-      parameters: {},
+      parameters: {
+        _end: '9',
+        _start: '0',
+      },
       promo: null,
       isPromoLoading: false,
     });
@@ -86,6 +100,10 @@ describe('Reducer: applicationSlice', () => {
       price: {
         'price_gte': 6000,
         'price_lte': 8000,
+      },
+      minMaxPrice: {
+        minPrice: null,
+        maxPrice: null,
       },
       filters: {},
       sorting: {
@@ -108,6 +126,10 @@ describe('Reducer: applicationSlice', () => {
       price: {
         'price_gte': 6000,
         'price_lte': 8000,
+      },
+      minMaxPrice: {
+        minPrice: null,
+        maxPrice: null,
       },
       filters: {},
       sorting: {
@@ -133,6 +155,10 @@ describe('Reducer: applicationSlice', () => {
       price: {
         'price_gte': 6000,
         'price_lte': 8000,
+      },
+      minMaxPrice: {
+        minPrice: null,
+        maxPrice: null,
       },
       filters: {},
       sorting: {

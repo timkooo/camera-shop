@@ -1,5 +1,5 @@
 import { makeFakeCamera, makeFakeCameras } from '../../utils/mocks';
-import { loadCameraById, loadCamerasWithParams, loadSimilarCameras } from '../api-actions';
+import { loadCameraById, loadCamerasWithParams, loadSearchResults, loadSimilarCameras } from '../api-actions';
 import { camerasSlice, InitialState } from './cameras.slice';
 
 const cameras = makeFakeCameras();
@@ -42,6 +42,7 @@ describe('Reducer: cameraSlice', () => {
       isCameraByIdLoading: false,
       similarCameras: [],
       areSimilarCamerasLoading: false,
+      searchResults: [],
     });
   });
 
@@ -59,6 +60,7 @@ describe('Reducer: cameraSlice', () => {
       isCameraByIdLoading: false,
       similarCameras: [],
       areSimilarCamerasLoading: false,
+      searchResults: [],
     });
   });
 
@@ -76,6 +78,25 @@ describe('Reducer: cameraSlice', () => {
       isCameraByIdLoading: false,
       similarCameras: cameras,
       areSimilarCamerasLoading: false,
+      searchResults: [],
+    });
+  });
+
+  it('should update searchResults by load search results', () => {
+    expect(
+      camerasSlice.reducer(state, {
+        type: loadSearchResults.fulfilled.type,
+        payload: cameras,
+      })
+    ).toEqual({
+      cameras: [],
+      areCamerasLoading: false,
+      camerasAmount: 0,
+      cameraById: null,
+      isCameraByIdLoading: false,
+      similarCameras: [],
+      areSimilarCamerasLoading: false,
+      searchResults: cameras,
     });
   });
 

@@ -6,7 +6,7 @@ import { api } from '../services/api';
 import { APIRoute, NameSpace } from '../const';
 import { RootState } from '../types/store';
 import { makeFakeCamera, makeFakeCameras, makeFakeReview, makeFakeReviewPost, makeFakeReviews } from '../utils/mocks';
-import { loadCameraById, loadCamerasWithParams, loadReviews, loadSimilarCameras, postReview } from './api-actions';
+import { loadCameraById, loadCamerasWithParams, loadMinMaxPrice, loadReviews, loadSearchResults, loadSimilarCameras, postReview } from './api-actions';
 
 describe('Async actions', () => {
   const mockAPI = new MockAdapter(api);
@@ -123,5 +123,45 @@ describe('Async actions', () => {
       postReview.fulfilled.type,
     ]);
   });
+
+  it('should dispatch loadSearchResults when GET /cameras?params', async () => {
+    const mockCameras = makeFakeCameras();
+    mockAPI
+      .onGet(`${APIRoute.Cameras}?name_like=${mockCameras[0].name}`)
+      .reply(200, mockCameras);
+
+    const store = mockStore();
+
+    await store.dispatch(loadSearchResults(mockCameras[0].name));
+
+    const actions = store.getActions().map(({type}) => type as string);
+
+    expect(actions).toEqual([
+      loadSearchResults.pending.type,
+      loadSearchResults.fulfilled.type,
+    ]);
+  });
+
+  it('should dispatch loadMinMaxPrice when GET /cameras?params', async () => {
+    const mockCameras = makeFakeCameras();
+    mockCameras.sort((camera1, camera2) => camera2.price - camera1.price);
+    mockAPI
+      .onGet(`${APIRoute.Cameras}?_sort=price&_order=asc&_start=0&_end=1`)
+      .reply(200, mockCameras)
+      .onGet(`${APIRoute.Cameras}?_sort=price&_order=desc&_start=0&_end=1`)
+      .reply(200, mockCameras);
+
+    const store = mockStore();
+
+    await store.dispatch(loadMinMaxPrice());
+
+    const actions = store.getActions().map(({type}) => type as string);
+
+    expect(actions).toEqual([
+      loadMinMaxPrice.pending.type,
+      loadMinMaxPrice.fulfilled.type,
+    ]);
+  });
+
 
 });

@@ -20,6 +20,10 @@ describe('Component: Catalog', () => {
           _sort: 'price',
           _order: 'asc',
         },
+        price: {
+          'price_gte' : 3000,
+          'price_lte' : 7000,
+        },
       },
       [NameSpace.Cameras]: {
         cameras: cameras,
@@ -50,6 +54,10 @@ describe('Component: Catalog', () => {
           _sort: 'price',
           _order: 'asc',
         },
+        price: {
+          'price_gte' : 3000,
+          'price_lte' : 7000,
+        },
       },
       [NameSpace.Cameras]: {
         cameras: [],
@@ -67,6 +75,6 @@ describe('Component: Catalog', () => {
     );
 
     expect(screen.getByText(/Could not load promo/i)).toBeInTheDocument();
-    expect(screen.getByText(/Sorry, there was an error loading data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Sorry, no products were found matching your search. Try to change filter/i)).toBeInTheDocument();
   });
 });

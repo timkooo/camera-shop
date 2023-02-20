@@ -1,19 +1,39 @@
 import { configureMockStore } from '@jedmao/redux-mock-store';
-import {render, screen} from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { FiltersForm } from './filters-form';
 import userEvent from '@testing-library/user-event';
+import { NameSpace } from '../../const';
+import { makeFakePromo } from '../../utils/mocks';
+import { MemoryRouter } from 'react-router-dom';
+import thunk from 'redux-thunk';
 
-const mockStore = configureMockStore();
+const mockStore = configureMockStore([thunk]);
 
 describe('Component: FiltersForm', () => {
   it('should render correctly', async () => {
-    const store = mockStore();
+    const store = mockStore({
+      [NameSpace.Application]: {
+        price: {},
+        minMaxPrice: {
+          minPrice: null,
+          maxPrice: null,
+        },
+        promo: makeFakePromo(),
+        parameters: {},
+        sorting: {
+          _sort: 'price',
+          _order: 'asc',
+        },
+      }
+    });
 
     render(
-      <Provider store={store}>
-        <FiltersForm />
-      </Provider>
+      <MemoryRouter>
+        <Provider store={store}>
+          <FiltersForm />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(screen.getByText(/Цена, ₽/i)).toBeInTheDocument();
@@ -31,6 +51,7 @@ describe('Component: FiltersForm', () => {
     expect(actions).toEqual([
       'APPLICATION/updateFilters',
       'APPLICATION/updatePrice',
+      'APPLICATION/loadMinMaxPrice/pending',
     ]);
   });
 });
