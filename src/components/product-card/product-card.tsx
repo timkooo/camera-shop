@@ -26,7 +26,7 @@ export const ProductCard: FC<ProductCardProps> = ({product, onSelectedProductCha
         <p className="visually-hidden">Рейтинг: 3</p>
         <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>{product.reviewCount}</p>
       </div>
-      <p className="product-card__title">{product.name}</p>
+      <p className="product-card__title">{product.category}&nbsp;{product.name}</p>
       <p className="product-card__price"><span className="visually-hidden">Цена:</span>{product.price.toLocaleString()} ₽
       </p>
     </div>
