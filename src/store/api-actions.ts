@@ -25,9 +25,8 @@ export const loadCameraById = createAsyncThunk(
     if (typeof cameraId === 'string') {
       const { data } = await api.get<Camera>(`${APIRoute.Cameras}/${cameraId}`);
       return data;
-    } else {
-      return rejectWithValue('wrong id');
     }
+    return rejectWithValue('');
   }
 );
 
@@ -45,9 +44,8 @@ export const loadSimilarCameras = createAsyncThunk(
     if (typeof cameraId === 'string') {
       const { data } = await api.get<Camera[]>(`${APIRoute.Cameras}/${cameraId}/similar`);
       return data;
-    } else {
-      return rejectWithValue('wrong id');
     }
+    return rejectWithValue('');
   }
 );
 
@@ -57,9 +55,8 @@ export const loadReviews = createAsyncThunk(
     if (typeof cameraId === 'string') {
       const { data } = await api.get<Review[]>(`${APIRoute.Cameras}/${cameraId}/reviews`);
       return data;
-    } else {
-      return rejectWithValue('wrong id');
     }
+    return rejectWithValue('');
   }
 );
 

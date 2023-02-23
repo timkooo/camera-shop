@@ -73,26 +73,44 @@ export const FiltersForm = () => {
     setUrlParams([]);
   };
 
-  const handleFromPriceChange = (evt: React.KeyboardEvent) => {
-    if (evt.key === 'Enter') {
-      const inputPrice = priceFromRef.current?.value;
-      const toPrice = priceToRef.current?.value;
-      if (minMaxPrice.minPrice && Number(inputPrice) < minMaxPrice.minPrice) {
-        if (priceFromRef.current && priceFromRef.current.value) {
-          priceFromRef.current.value = minMaxPrice.minPrice.toString();
-        }
-        setPrice(SortingTypes.PriceUp, minMaxPrice.minPrice.toString());
-        return;
+  const handleFromPriceChange = () => {
+    const inputPrice = priceFromRef.current?.value;
+    const toPrice = priceToRef.current?.value;
+    if (minMaxPrice.minPrice && Number(inputPrice) < minMaxPrice.minPrice) {
+      if (priceFromRef.current && priceFromRef.current.value) {
+        priceFromRef.current.value = minMaxPrice.minPrice.toString();
       }
-      if (inputPrice && toPrice && inputPrice > toPrice) {
-        if (priceFromRef.current && priceFromRef.current.value) {
-          priceFromRef.current.value = toPrice;
-        }
-        setPrice(SortingTypes.PriceUp, toPrice);
-        return;
-      }
-      setPrice(SortingTypes.PriceUp, inputPrice ?? '');
+      setPrice(SortingTypes.PriceUp, minMaxPrice.minPrice.toString());
+      return;
     }
+    if (inputPrice && toPrice && Number(inputPrice) > Number(toPrice)) {
+      if (priceFromRef.current && priceFromRef.current.value) {
+        priceFromRef.current.value = toPrice;
+      }
+      setPrice(SortingTypes.PriceUp, toPrice);
+      return;
+    }
+    setPrice(SortingTypes.PriceUp, inputPrice ?? '');
+  };
+
+  const handleToPriceChange = () => {
+    const inputPrice = priceToRef.current?.value;
+    const fromPrice = priceFromRef.current?.value;
+    if (minMaxPrice.maxPrice && Number(inputPrice) > minMaxPrice.maxPrice) {
+      if (priceToRef.current && priceToRef.current.value) {
+        priceToRef.current.value = minMaxPrice.maxPrice.toString();
+      }
+      setPrice(SortingTypes.PriceDown, minMaxPrice.maxPrice.toString());
+      return;
+    }
+    if (inputPrice && fromPrice && Number(inputPrice) < Number(fromPrice)) {
+      if (priceToRef.current && priceToRef.current.value) {
+        priceToRef.current.value = fromPrice;
+      }
+      setPrice(SortingTypes.PriceDown, fromPrice);
+      return;
+    }
+    setPrice(SortingTypes.PriceDown, inputPrice ?? '');
   };
 
   const setPrice = (priceType : string, value: string) => {
@@ -100,29 +118,7 @@ export const FiltersForm = () => {
       ...price,
       [priceType]: Number(value),
     }));
-    updateUrlParam(SortingTypes.PriceDown, value);
-  };
-
-  const handleToPriceChange = (evt: React.KeyboardEvent) => {
-    if (evt.key === 'Enter') {
-      const inputPrice = priceToRef.current?.value;
-      const fromPrice = priceFromRef.current?.value;
-      if (minMaxPrice.maxPrice && Number(inputPrice) > minMaxPrice.maxPrice) {
-        if (priceToRef.current && priceToRef.current.value) {
-          priceToRef.current.value = minMaxPrice.maxPrice.toString();
-        }
-        setPrice(SortingTypes.PriceDown, minMaxPrice.maxPrice.toString());
-        return;
-      }
-      if (inputPrice && fromPrice && inputPrice < fromPrice) {
-        if (priceToRef.current && priceToRef.current.value) {
-          priceToRef.current.value = fromPrice;
-        }
-        setPrice(SortingTypes.PriceDown, fromPrice);
-        return;
-      }
-      setPrice(SortingTypes.PriceDown, inputPrice ?? '');
-    }
+    updateUrlParam(priceType, value);
   };
 
   const addFilter = <K extends keyof Camera>(name: K, value: Camera[K], targetArray = filters) => {
@@ -168,14 +164,14 @@ export const FiltersForm = () => {
     dispatch(updatePrice(priceData));
   };
 
-  const hadleDefaultFromPriceValue = () => {
+  const setDefaultFromPriceValue = () => {
     if (price[SortingTypes.PriceUp]) {
       return price[SortingTypes.PriceUp];
     }
     return minMaxPrice.minPrice ? minMaxPrice.minPrice : '';
   };
 
-  const hadleDefaultToPriceValue = () => {
+  const setDefaultToPriceValue = () => {
     if (price[SortingTypes.PriceDown]) {
       return price[SortingTypes.PriceDown];
     }
@@ -206,8 +202,8 @@ export const FiltersForm = () => {
                   type="number"
                   name="price"
                   placeholder="от"
-                  onKeyDown={handleFromPriceChange}
-                  defaultValue={hadleDefaultFromPriceValue()}
+                  onBlur={handleFromPriceChange}
+                  defaultValue={setDefaultFromPriceValue()}
                 />
               </label>
             </div>
@@ -218,8 +214,8 @@ export const FiltersForm = () => {
                   type="number"
                   name="priceUp"
                   placeholder="до"
-                  onKeyDown={handleToPriceChange}
-                  defaultValue={hadleDefaultToPriceValue()}
+                  onBlur={handleToPriceChange}
+                  defaultValue={setDefaultToPriceValue()}
                 />
               </label>
             </div>

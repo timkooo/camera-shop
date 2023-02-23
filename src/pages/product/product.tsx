@@ -23,6 +23,7 @@ import { ProductCard } from '../../components/product-card/product-card';
 import { ProductModal } from '../../components/product-modal/product-modal';
 import { ReviewModal } from '../../components/review-modal/review-modal';
 import { SuccessModal } from '../../components/success-modal/success-modal';
+import './product.css';
 
 export const Product = () => {
   const { id } = useParams();

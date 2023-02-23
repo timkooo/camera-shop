@@ -1,5 +1,5 @@
 import { configureMockStore } from '@jedmao/redux-mock-store';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { FiltersForm } from './filters-form';
 import userEvent from '@testing-library/user-event';
@@ -16,8 +16,8 @@ describe('Component: FiltersForm', () => {
       [NameSpace.Application]: {
         price: {},
         minMaxPrice: {
-          minPrice: null,
-          maxPrice: null,
+          minPrice: 3000,
+          maxPrice: 9000,
         },
         promo: makeFakePromo(),
         parameters: {},
@@ -53,5 +53,38 @@ describe('Component: FiltersForm', () => {
       'APPLICATION/updatePrice',
       'APPLICATION/loadMinMaxPrice/pending',
     ]);
+
+    expect(screen.getByPlaceholderText('от')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('до')).toBeInTheDocument();
+
+    const priceFrom = screen.getAllByRole('spinbutton');
+
+    expect(priceFrom[0]).toHaveValue(3000);
+    expect(priceFrom[1]).toHaveValue(9000);
+
+    await userEvent.clear(priceFrom[0]);
+    await userEvent.clear(priceFrom[1]);
+
+    expect(priceFrom[0]).toHaveValue(null);
+    expect(priceFrom[0]).toHaveValue(null);
+
+    await userEvent.type(priceFrom[0], '4000');
+    fireEvent.blur(priceFrom[0]);
+    await userEvent.type(priceFrom[1], '100000');
+    fireEvent.blur(priceFrom[1]);
+
+    expect(priceFrom[0]).toHaveValue(4000);
+    expect(priceFrom[1]).toHaveValue(9000);
+
+    await userEvent.clear(priceFrom[0]);
+    await userEvent.clear(priceFrom[1]);
+
+    await userEvent.type(priceFrom[0], '4000');
+    fireEvent.blur(priceFrom[0]);
+    await userEvent.type(priceFrom[1], '1000');
+    fireEvent.blur(priceFrom[1]);
+
+    expect(priceFrom[0]).toHaveValue(4000);
+    expect(priceFrom[1]).toHaveValue(4000);
   });
 });

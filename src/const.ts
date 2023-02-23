@@ -60,3 +60,10 @@ export enum SortingTypes {
   PriceUp = 'price_gte',
   PriceDown = 'price_lte'
 }
+
+export enum UrlParams {
+  PageStart = '_start',
+  PageEnd = '_end',
+  Sorting = '_sort',
+  Order = '_order',
+}

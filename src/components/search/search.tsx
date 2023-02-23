@@ -55,6 +55,10 @@ export const Search = () => {
         const searchElements = Array.from(searchList.current.children) as HTMLLIElement[];
         searchElements[count] && searchElements[count].click();
       }
+      if (searchInput.current) {
+        searchInput.current.value = '';
+      }
+      dispatch(resetSearchResults());
     }
   }, [count, enterPress]);
 
@@ -75,7 +79,7 @@ export const Search = () => {
           <input className="form-search__input" type="text" autoComplete="off" placeholder="Поиск по сайту" ref={searchInput} onChange={handleSearchParamChange}/>
         </label>
         <ul className="form-search__select-list" ref={searchList}>
-          {searchResults.map((camera, index) => (
+          {searchResults.map((camera) => (
             <li key={camera.id} className="form-search__select-item" tabIndex={0} onClick={(evt) => handleSearchResultClick(evt, camera.id)}>{camera.name}</li>
           ))}
         </ul>

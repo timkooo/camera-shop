@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
 import { loadPromo } from '../../store/api-actions';
 import { Sorting, updateSorting } from '../../store/application/application.slice';
-import { AppRoutes, getSortingCategory } from '../../const';
+import { AppRoutes, getSortingCategory, UrlParams } from '../../const';
 import { selectPromo, selectSorting } from '../../store/application/application.selectors';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Pagination } from '../../components/pagination/pagination';
@@ -35,7 +35,7 @@ export const Catalog = () => {
   const updateSortingByUrlParams = () => {
     const sortingData: Sorting = {...sorting};
     for (const [key, value] of urlParams.entries()) {
-      if (key !== '_sort' && key !== '_order') {
+      if (key !== UrlParams.Sorting && key !== UrlParams.Order) {
         continue;
       }
       sortingData[key as keyof Sorting] = value;

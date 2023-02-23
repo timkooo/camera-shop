@@ -21,6 +21,6 @@ describe('Component: ProductCard', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(fakeCamera.name)).toBeInTheDocument();
+    expect(screen.getByText(/Всего оценок:/i)).toBeInTheDocument();
   });
 });

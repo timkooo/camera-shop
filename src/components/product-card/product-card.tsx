@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { Dispatch, FC } from 'react';
 import { Link } from 'react-router-dom';
 import { Camera } from '../../types/camera';
+import './product-card.css';
 
 type ProductCardProps = {
   product: Camera;

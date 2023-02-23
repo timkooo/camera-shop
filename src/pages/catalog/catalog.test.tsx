@@ -15,20 +15,24 @@ describe('Component: Catalog', () => {
     const store = mockStore({
       [NameSpace.Application]: {
         promo: makeFakePromo(),
-        parameters: {},
+        parameters: {
+          _start: 0,
+          _end: 9,
+        },
         sorting: {
           _sort: 'price',
           _order: 'asc',
         },
-        price: {
-          'price_gte' : 3000,
-          'price_lte' : 7000,
+        price: {},
+        minMaxPrice: {
+          minPrice: null,
+          maxPrice: null,
         },
       },
       [NameSpace.Cameras]: {
         cameras: cameras,
         areCamerasLoading: false,
-        camerasAmount: 40,
+        camerasAmount: cameras.length,
       }
     });
 
@@ -42,7 +46,7 @@ describe('Component: Catalog', () => {
 
     expect(screen.getByText(/Новинка!/i)).toBeInTheDocument();
     expect(screen.getByText(/Каталог фото- и видеотехники/i)).toBeInTheDocument();
-    expect(screen.getByText(cameras[3].name)).toBeInTheDocument();
+    expect(screen.getAllByText(/Купить/i).length === cameras.length).toBe(true);
   });
 
   it('should render correctly without cameras', () => {
@@ -54,15 +58,16 @@ describe('Component: Catalog', () => {
           _sort: 'price',
           _order: 'asc',
         },
-        price: {
-          'price_gte' : 3000,
-          'price_lte' : 7000,
+        price: {},
+        minMaxPrice: {
+          minPrice: null,
+          maxPrice: null,
         },
       },
       [NameSpace.Cameras]: {
         cameras: [],
         areCamerasLoading: false,
-        camerasAmount: 40,
+        camerasAmount: 0,
       }
     });
 
