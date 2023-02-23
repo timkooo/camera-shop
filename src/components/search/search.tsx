@@ -6,6 +6,7 @@ import { useKeyPress } from '../../hooks/use-key-press';
 import { loadSearchResults } from '../../store/api-actions';
 import { selectSearchResults } from '../../store/cameras/cameras.selectors';
 import { resetSearchResults } from '../../store/cameras/cameras.slice';
+import { debounce } from '../../utils/utils';
 
 export const Search = () => {
   const searchResults = useAppSelector(selectSearchResults);
@@ -18,9 +19,11 @@ export const Search = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const debounceSearchResults = debounce((value) => {(async () => await dispatch(loadSearchResults(value)))();}, 1000);
+
   const handleSearchParamChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { value }: { value: string } = evt.target;
-    dispatch(loadSearchResults(value));
+    debounceSearchResults(value);
   };
 
   const handleSearchResultClick = (evt: React.MouseEvent<HTMLLIElement>, cameraId: number) => {
