@@ -1,6 +1,10 @@
 export const REVIEWS_TO_SHOW = 3;
 export const PRODUCTS_PER_PAGE = 9;
 export const SEARCH_RESULTS_TO_SHOW = 4;
+export const DEFAULT_PAGE_PARAMS = {
+  _start : '0',
+  _end : PRODUCTS_PER_PAGE.toString(),
+};
 
 export enum AppRoutes {
   Main = '/',

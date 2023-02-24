@@ -29,13 +29,14 @@ export const Search = () => {
   const handleSearchResultClick = (evt: React.MouseEvent<HTMLLIElement>, cameraId: number) => {
     evt.preventDefault();
     navigate(`product/${cameraId}`);
+    handleResetSearch();
   };
 
   const handleResetSearch = () => {
     if (searchInput.current) {
       searchInput.current.value = '';
-      dispatch(resetSearchResults());
     }
+    dispatch(resetSearchResults());
   };
 
   useEffect(() => {
@@ -58,10 +59,7 @@ export const Search = () => {
         const searchElements = Array.from(searchList.current.children) as HTMLLIElement[];
         searchElements[count] && searchElements[count].click();
       }
-      if (searchInput.current) {
-        searchInput.current.value = '';
-      }
-      dispatch(resetSearchResults());
+      handleResetSearch();
     }
   }, [count, enterPress]);
 

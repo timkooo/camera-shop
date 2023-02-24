@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { NameSpace, UrlParams } from '../../const';
+import { DEFAULT_PAGE_PARAMS, NameSpace } from '../../const';
 import { Filters } from '../../types/filters';
 import { Promo } from '../../types/promo';
 import { loadMinMaxPrice, loadPromo } from '../api-actions';
@@ -53,10 +53,7 @@ export const applicationSlice = createSlice({
   reducers: {
     updateFilters(state, action: PayloadAction<Filters>) {
       state.filters = action.payload;
-      state.parameters = {
-        [UrlParams.PageStart] : '0',
-        [UrlParams.PageEnd] : '9',
-      };
+      state.parameters = DEFAULT_PAGE_PARAMS;
     },
     updateSorting(state, action: PayloadAction<Sorting>) {
       state.sorting = action.payload;
@@ -66,10 +63,7 @@ export const applicationSlice = createSlice({
     },
     updatePrice(state, action: PayloadAction<Price>) {
       state.price = action.payload;
-      state.parameters = {
-        [UrlParams.PageStart] : '0',
-        [UrlParams.PageEnd] : '9',
-      };
+      state.parameters = DEFAULT_PAGE_PARAMS;
     },
   },
   extraReducers(builder) {
