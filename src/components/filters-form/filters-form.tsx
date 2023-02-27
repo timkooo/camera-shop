@@ -245,7 +245,7 @@ export const FiltersForm = () => {
                 name="videocamera"
                 checked={isFilterChecked('videocamera')}
                 onChange={handleFilterFormChange}
-                disabled={isDisabled('photocamera')}
+                disabled={isDisabled('photocamera') || isDisabled('film') || isDisabled('snapshot')}
               />
               <span className="custom-checkbox__icon"></span>
               <span className="custom-checkbox__label">

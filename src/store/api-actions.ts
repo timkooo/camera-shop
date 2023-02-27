@@ -81,8 +81,19 @@ export const loadSearchResults = createAsyncThunk(
     if (param === '') {
       return [];
     }
-    const { data } = await api.get<Camera[]>(`${APIRoute.Cameras}?name_like=${param}`);
-    return data;
+    const resultsByName = await api.get<Camera[]>(`${APIRoute.Cameras}?name_like=${param}`);
+    if (resultsByName.data.length !== 0) {
+      return resultsByName.data;
+    }
+    const resultsByCategory = await api.get<Camera[]>(`${APIRoute.Cameras}?category_like=${param}`);
+    if (resultsByCategory.data.length !== 0) {
+      return resultsByCategory.data;
+    }
+    const resultsByType = await api.get<Camera[]>(`${APIRoute.Cameras}?type_like=${param}`);
+    if (resultsByType.data.length !== 0) {
+      return resultsByType.data;
+    }
+    return [];
   }
 );
 
