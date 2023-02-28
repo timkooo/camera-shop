@@ -79,7 +79,7 @@ export const Search = () => {
           </svg>
           <input className="form-search__input" type="text" autoComplete="off" placeholder="Поиск по сайту" ref={searchInput} onChange={handleSearchParamChange}/>
         </label>
-        <ul className="form-search__select-list" ref={searchList}>
+        <ul className="form-search__select-list scroller" ref={searchList}>
           {searchResults.map((camera) => (
             <li key={camera.id} className="form-search__select-item" tabIndex={0} onClick={(evt) => handleSearchResultClick(evt, camera.id)}>{camera.name}</li>
           ))}

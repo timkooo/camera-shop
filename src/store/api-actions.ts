@@ -78,22 +78,25 @@ export const loadPromo = createAsyncThunk(
 export const loadSearchResults = createAsyncThunk(
   `${NameSpace.Cameras}/loadSearchResults`,
   async (param: string) => {
+    const arr = param.toLowerCase().split(' ');
     if (param === '') {
       return [];
     }
-    const resultsByName = await api.get<Camera[]>(`${APIRoute.Cameras}?name_like=${param}`);
-    if (resultsByName.data.length !== 0) {
-      return resultsByName.data;
-    }
-    const resultsByCategory = await api.get<Camera[]>(`${APIRoute.Cameras}?category_like=${param}`);
-    if (resultsByCategory.data.length !== 0) {
-      return resultsByCategory.data;
-    }
-    const resultsByType = await api.get<Camera[]>(`${APIRoute.Cameras}?type_like=${param}`);
-    if (resultsByType.data.length !== 0) {
-      return resultsByType.data;
-    }
-    return [];
+    let seachArray: Camera[] = [];
+    await Promise.all(arr.map(async (word) => {
+      const resultsByName = await api.get<Camera[]>(`${APIRoute.Cameras}?name_like=${word}`);
+      const resultsByCategory = await api.get<Camera[]>(`${APIRoute.Cameras}?category_like=${word}`);
+      const resultsByType = await api.get<Camera[]>(`${APIRoute.Cameras}?type_like=${word}`);
+      seachArray = [...seachArray, ...resultsByName.data, ...resultsByCategory.data, ...resultsByType.data];
+    }));
+    const dublicates = [...new Map(seachArray.map((item) => [item.id, item])).values()];
+    const final = dublicates.filter((seachResult: Camera) => arr.every((word) => Object.values(seachResult).some((field) => {
+      if (field.toString().toLowerCase().indexOf(word) < 0) {
+        return false;
+      }
+      return true;
+    })));
+    return final;
   }
 );
 
