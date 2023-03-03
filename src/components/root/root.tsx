@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { AppRoutes } from '../../const';
+import { BasketLink } from '../basket-link/basket-link';
 import { Search } from '../search/search';
 
 export const Root = () => (
@@ -105,11 +106,8 @@ export const Root = () => (
 
           <Search/>
 
-          <Link className="header__basket-link" to={AppRoutes.Basket}>
-            <svg width="16" height="16" aria-hidden="true">
-              <use xlinkHref="#icon-basket"></use>
-            </svg><span className="header__basket-count">3</span>
-          </Link>
+          <BasketLink/>
+
         </div>
       </header>
 

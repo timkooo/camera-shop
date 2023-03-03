@@ -2,10 +2,11 @@ import { Link } from 'react-router-dom';
 import { BasketItem } from '../../components/basket-item/basket-item';
 import { AppRoutes } from '../../const';
 import { useAppSelector } from '../../hooks/rtk-hooks';
-import { selectBasket } from '../../store/basket/basket.selectors';
+import { selectBasketItems, selectBasketPrice } from '../../store/basket/basket.selectors';
 
 export const Basket = () => {
-  const basket = useAppSelector(selectBasket);
+  const basketItems = useAppSelector(selectBasketItems);
+  const basketPrice = useAppSelector(selectBasketPrice);
 
   return (
     <main>
@@ -41,11 +42,11 @@ export const Basket = () => {
           <div className="container">
             <h1 className="title title--h2">Корзина</h1>
 
-            {basket.length === 0 ? (
+            {basketItems.length === 0 ? (
               <div>Ваша корзина пуста</div>
             ) : (
               <ul className="basket__list">
-                {basket.map((item) => (
+                {basketItems.map((item) => (
                   <BasketItem key={item.id} item={item} />
                 ))}
               </ul>
@@ -79,7 +80,7 @@ export const Basket = () => {
               <div className="basket__summary-order">
                 <p className="basket__summary-item">
                   <span className="basket__summary-text">Всего:</span>
-                  <span className="basket__summary-value">111 390 ₽</span>
+                  <span className="basket__summary-value">{basketPrice} ₽</span>
                 </p>
                 <p className="basket__summary-item">
                   <span className="basket__summary-text">Скидка:</span>
@@ -92,7 +93,7 @@ export const Basket = () => {
                     К оплате:
                   </span>
                   <span className="basket__summary-value basket__summary-value--total">
-                    111 390 ₽
+                    {basketPrice} ₽
                   </span>
                 </p>
                 <button className="btn btn--purple" type="submit">

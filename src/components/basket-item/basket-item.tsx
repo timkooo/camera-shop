@@ -1,10 +1,9 @@
 import { FC } from 'react';
 import { useAppDispatch } from '../../hooks/rtk-hooks';
-import { removeFromBasket } from '../../store/basket/basket.slice';
-import { Camera } from '../../types/camera';
+import { BasketItemType, decreaseQuantity, increaseQuantity, removeFromBasket } from '../../store/basket/basket.slice';
 
 type BasketItemProps = {
-  item: Camera;
+  item: BasketItemType;
 };
 
 export const BasketItem: FC<BasketItemProps> = ({ item }) => {
@@ -12,6 +11,14 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
 
   const handleRemoveFromBasket = () => {
     dispatch(removeFromBasket(item.id));
+  };
+
+  const handleIncreaseQuantity = () => {
+    dispatch(increaseQuantity(item));
+  };
+
+  const handleDecreaseQuantity = () => {
+    dispatch(decreaseQuantity(item));
   };
 
   return (
@@ -50,6 +57,8 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
         <button
           className="btn-icon btn-icon--prev"
           aria-label="уменьшить количество товара"
+          onClick={handleDecreaseQuantity}
+          disabled={item.quantity === 1}
         >
           <svg width="7" height="12" aria-hidden="true">
             <use xlinkHref="#icon-arrow"></use>
@@ -59,7 +68,8 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
         <input
           type="number"
           id="counter1"
-          defaultValue="2"
+          defaultValue="1"
+          value={item.quantity}
           min="1"
           max="99"
           aria-label="количество товара"
@@ -67,6 +77,8 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
         <button
           className="btn-icon btn-icon--next"
           aria-label="увеличить количество товара"
+          onClick={handleIncreaseQuantity}
+          disabled={item.quantity === 99}
         >
           <svg width="7" height="12" aria-hidden="true">
             <use xlinkHref="#icon-arrow"></use>
@@ -74,7 +86,7 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
         </button>
       </div>
       <div className="basket-item__total-price">
-        <span className="visually-hidden">Общая цена:</span>37 940 ₽
+        <span className="visually-hidden">Общая цена:</span>{item.totalPrice}
       </div>
       <button
         className="cross-btn"

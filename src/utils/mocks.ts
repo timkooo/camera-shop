@@ -1,4 +1,5 @@
 import { datatype, internet, commerce, image } from 'faker';
+import { BasketItemType } from '../store/basket/basket.slice';
 import { Camera } from '../types/camera';
 import { Review, ReviewPost } from '../types/review';
 
@@ -54,3 +55,5 @@ export const makeFakeReviewPost = (id = 1): ReviewPost => ({
   rating: datatype.number({min: 1, max: 5}),
   cameraId: id,
 });
+
+export const makeFakeBasketItem = (camera: Camera, quantity: number) : BasketItemType => ({...camera, quantity: quantity, totalPrice: camera.price * quantity});
