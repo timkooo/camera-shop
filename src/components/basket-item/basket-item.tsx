@@ -60,7 +60,7 @@ export const BasketItem: FC<BasketItemProps> = ({ item } : BasketItemProps) => {
         </picture>
       </div>
       <div className="basket-item__description">
-        <p className="basket-item__title">{item.name}</p>
+        <p className="basket-item__title">{item.category}&nbsp;{item.name}</p>
         <ul className="basket-item__list">
           <li className="basket-item__list-item">
             <span className="basket-item__article">Артикул:</span>{' '}
@@ -72,7 +72,7 @@ export const BasketItem: FC<BasketItemProps> = ({ item } : BasketItemProps) => {
       </div>
       <p className="basket-item__price">
         <span className="visually-hidden">Цена:</span>
-        {item.price} ₽
+        {item.price.toLocaleString()} ₽
       </p>
       <div className="quantity">
         <button
@@ -108,7 +108,7 @@ export const BasketItem: FC<BasketItemProps> = ({ item } : BasketItemProps) => {
         </button>
       </div>
       <div className="basket-item__total-price">
-        <span className="visually-hidden">Общая цена:</span>{item.totalPrice.toLocaleString()}
+        <span className="visually-hidden">Общая цена:</span>{item.totalPrice.toLocaleString()} ₽
       </div>
       <button
         className="cross-btn"

@@ -138,12 +138,12 @@ export const Basket = () => {
               <div className="basket__summary-order">
                 <p className="basket__summary-item">
                   <span className="basket__summary-text">Всего:</span>
-                  <span className="basket__summary-value">{basketPrice} ₽</span>
+                  <span className="basket__summary-value">{basketPrice.toLocaleString()} ₽</span>
                 </p>
                 <p className="basket__summary-item">
                   <span className="basket__summary-text">Скидка:</span>
                   <span className="basket__summary-value basket__summary-value--bonus">
-                    {discount} ₽
+                    {discount.toLocaleString()} ₽
                   </span>
                 </p>
                 <p className="basket__summary-item">
@@ -151,7 +151,7 @@ export const Basket = () => {
                     К оплате:
                   </span>
                   <span className="basket__summary-value basket__summary-value--total">
-                    {finalPrice} ₽
+                    {finalPrice.toLocaleString()} ₽
                   </span>
                 </p>
                 <button className="btn btn--purple" type="submit" onClick={handlePostOrder}>
