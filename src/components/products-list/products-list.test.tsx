@@ -1,7 +1,7 @@
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import {render, screen} from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { NameSpace } from '../../const';
 import { makeFakeCameras } from '../../utils/mocks';
 import { ProductsList } from './products-list';
@@ -27,20 +27,24 @@ describe('Component: ProductList', () => {
           _order: 'asc',
         },
         parameters: {}
+      },
+      [NameSpace.Basket]: {
+        basketItems: [],
       }
     });
 
     render(
-      <MemoryRouter>
+      <BrowserRouter>
         <Provider store={store}>
           <ProductsList pageNumber={'1'}/>
         </Provider>
-      </MemoryRouter>
+      </BrowserRouter>
     );
 
-    const buttons = screen.getAllByRole('button');
+    const buttons = screen.getAllByText(/Купить/i);
+    const productCards = screen.getAllByText(/Всего оценок:/i);
 
-    expect(buttons.length).toBe(5);
+    expect(productCards.length).toBe(5);
 
     await userEvent.click(buttons[0]);
 

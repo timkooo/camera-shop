@@ -3,7 +3,6 @@ import {
   addToBasket,
   basketSlice,
   decreaseQuantity,
-  increaseQuantity,
   InitialState,
   removeFromBasket,
 } from './basket.slice';
@@ -20,6 +19,7 @@ describe('Reducer: basketSlice', () => {
       basketItems: [],
       basketPrice: 0,
       basketQuantity: 0,
+      discount: 0,
     };
 
     expect(
@@ -31,6 +31,7 @@ describe('Reducer: basketSlice', () => {
       basketItems: [basketItem],
       basketPrice: camera.price,
       basketQuantity: 1,
+      discount: 0,
     });
   });
 
@@ -39,17 +40,19 @@ describe('Reducer: basketSlice', () => {
       basketItems: [basketItem],
       basketPrice: camera.price,
       basketQuantity: 1,
+      discount: 0,
     };
 
     expect(
       basketSlice.reducer(state, {
-        type: increaseQuantity.type,
+        type: addToBasket.type,
         payload: camera,
       })
     ).toEqual({
       basketItems: [twoSameItems],
       basketPrice: camera.price * 2,
       basketQuantity: 2,
+      discount: 0,
     });
   });
 
@@ -58,6 +61,7 @@ describe('Reducer: basketSlice', () => {
       basketItems: [twoSameItems],
       basketPrice: camera.price * 2,
       basketQuantity: 2,
+      discount: 0,
     };
 
     expect(
@@ -69,6 +73,7 @@ describe('Reducer: basketSlice', () => {
       basketItems: [basketItem],
       basketPrice: camera.price,
       basketQuantity: 1,
+      discount: 0,
     });
   });
 
@@ -77,6 +82,7 @@ describe('Reducer: basketSlice', () => {
       basketItems: [twoSameItems],
       basketPrice: camera.price * 2,
       basketQuantity: 2,
+      discount: 0,
     };
 
     expect(
@@ -88,6 +94,7 @@ describe('Reducer: basketSlice', () => {
       basketItems: [twoSameItems, secondBasketItem],
       basketPrice: camera.price * 2 + secondCamera.price,
       basketQuantity: 3,
+      discount: 0,
     });
   });
 
@@ -96,6 +103,7 @@ describe('Reducer: basketSlice', () => {
       basketItems: [twoSameItems, secondBasketItem],
       basketPrice: camera.price * 2 + secondCamera.price,
       basketQuantity: 3,
+      discount: 0,
     };
 
     expect(
@@ -107,6 +115,7 @@ describe('Reducer: basketSlice', () => {
       basketItems: [secondBasketItem],
       basketPrice: secondCamera.price,
       basketQuantity: 1,
+      discount: 0,
     });
   });
 });

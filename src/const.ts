@@ -5,18 +5,26 @@ export const DEFAULT_PAGE_PARAMS = {
   _start : '0',
   _end : PRODUCTS_PER_PAGE.toString(),
 };
+export const MIN_QUANTITY = 1;
+export const MAX_QUANTITY = 99;
+export const ERROR_SHOW_TIME = 5000;
+export const WRONG_DATA_CODE_ERROR = 400;
+export const DEFAULT_DISCOUNT = 0;
 
 export enum AppRoutes {
   Main = '/',
   Product = '/product',
   Catalog = '/catalog',
   Basket = '/basket',
+  ErrorPage = '/error',
 }
 
 export enum APIRoute {
   Cameras = '/cameras',
   Reviews = '/reviews',
   Promo = '/promo',
+  Coupons = '/coupons',
+  Orders = '/orders',
 }
 
 export enum NameSpace {

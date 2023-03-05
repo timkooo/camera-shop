@@ -1,12 +1,69 @@
+import classNames from 'classnames';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BasketItem } from '../../components/basket-item/basket-item';
-import { AppRoutes } from '../../const';
-import { useAppSelector } from '../../hooks/rtk-hooks';
-import { selectBasketItems, selectBasketPrice } from '../../store/basket/basket.selectors';
+import { OrderModal } from '../../components/order-modal/order-modal';
+import { AppRoutes, ERROR_SHOW_TIME, WRONG_DATA_CODE_ERROR } from '../../const';
+import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
+import { useModal } from '../../hooks/use-modal';
+import { loadDiscount, postOrder } from '../../store/api-actions';
+import { selectBasketItems, selectBasketPrice, selectDiscountPrice, selectFinalPrice } from '../../store/basket/basket.selectors';
 
 export const Basket = () => {
   const basketItems = useAppSelector(selectBasketItems);
   const basketPrice = useAppSelector(selectBasketPrice);
+  const discount = useAppSelector(selectDiscountPrice);
+  const finalPrice = useAppSelector(selectFinalPrice);
+  const [currentCoupon, setCurrentCoupon] = useState<string | null>(null);
+  const couponInput = useRef<HTMLInputElement | null>(null);
+  const [isCouponValid, setIsCouponValid] = useState<boolean | null>(null);
+  const [orderModalVisible, orderModalToggle] = useModal();
+  const dispatch = useAppDispatch();
+  const reg = RegExp('^\\b\\S+\\b$');
+
+
+  const handlePostCoupon = (evt: React.FormEvent<HTMLFormElement>) => {(async () => {
+    evt.preventDefault();
+    if (couponInput.current && couponInput.current.value) {
+      if (!reg.test(couponInput.current.value)) {
+        setIsCouponValid(false);
+        setTimeout(() => setIsCouponValid(null), ERROR_SHOW_TIME);
+        return;
+      }
+      const coupon = { coupon : couponInput.current.value };
+      try {
+        await dispatch(loadDiscount(coupon)).unwrap();
+        setCurrentCoupon(couponInput.current.value);
+        setIsCouponValid(true);
+        setTimeout(() => setIsCouponValid(null), ERROR_SHOW_TIME);
+      }
+      catch(err) {
+        if (err === WRONG_DATA_CODE_ERROR) {
+          setCurrentCoupon(null);
+          setIsCouponValid(false);
+          setTimeout(() => setIsCouponValid(null), ERROR_SHOW_TIME);
+        }
+      }
+      couponInput.current.value = '';
+    }
+  })();
+  };
+
+  const getBasketItemsIds = () => {
+    const itemsIds: number[] = [];
+    basketItems.map((item) => itemsIds.push(item.id));
+    return itemsIds;
+  };
+
+  const handlePostOrder = () => {(async () => {
+    const order = {
+      camerasIds: getBasketItemsIds(),
+      coupon: currentCoupon,
+    };
+    await dispatch(postOrder(order));
+    orderModalToggle();
+  })();
+  };
 
   return (
     <main>
@@ -58,11 +115,12 @@ export const Basket = () => {
                   Если у вас есть промокод на скидку, примените его в этом поле
                 </p>
                 <div className="basket-form">
-                  <form action="#">
-                    <div className="custom-input">
+                  <form method="post" onSubmit={handlePostCoupon}>
+                    <div className={classNames('custom-input', {'is-invalid' : isCouponValid === false}, {'is-valid' : isCouponValid === true})}>
                       <label>
                         <span className="custom-input__label">Промокод</span>
                         <input
+                          ref={couponInput}
                           type="text"
                           name="promo"
                           placeholder="Введите промокод"
@@ -85,7 +143,7 @@ export const Basket = () => {
                 <p className="basket__summary-item">
                   <span className="basket__summary-text">Скидка:</span>
                   <span className="basket__summary-value basket__summary-value--bonus">
-                    0 ₽
+                    {discount} ₽
                   </span>
                 </p>
                 <p className="basket__summary-item">
@@ -93,10 +151,10 @@ export const Basket = () => {
                     К оплате:
                   </span>
                   <span className="basket__summary-value basket__summary-value--total">
-                    {basketPrice} ₽
+                    {finalPrice} ₽
                   </span>
                 </p>
-                <button className="btn btn--purple" type="submit">
+                <button className="btn btn--purple" type="submit" onClick={handlePostOrder}>
                   Оформить заказ
                 </button>
               </div>
@@ -104,6 +162,8 @@ export const Basket = () => {
           </div>
         </section>
       </div>
+
+      <OrderModal modalVisible={orderModalVisible} onModalToggle={orderModalToggle}/>
     </main>
   );
 };

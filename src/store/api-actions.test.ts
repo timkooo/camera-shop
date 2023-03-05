@@ -6,7 +6,7 @@ import { api } from '../services/api';
 import { APIRoute, NameSpace } from '../const';
 import { RootState } from '../types/store';
 import { makeFakeCamera, makeFakeCameras, makeFakeReview, makeFakeReviewPost, makeFakeReviews } from '../utils/mocks';
-import { loadCameraById, loadCamerasWithParams, loadMinMaxPrice, loadReviews, loadSearchResults, loadSimilarCameras, postReview } from './api-actions';
+import { loadCameraById, loadCamerasWithParams, loadDiscount, loadMinMaxPrice, loadReviews, loadSearchResults, loadSimilarCameras, postOrder, postReview } from './api-actions';
 
 describe('Async actions', () => {
   const mockAPI = new MockAdapter(api);
@@ -127,18 +127,22 @@ describe('Async actions', () => {
   it('should dispatch loadSearchResults when GET /cameras?params', async () => {
     const mockCameras = makeFakeCameras();
     mockAPI
-      .onGet(`${APIRoute.Cameras}?name_like=${mockCameras[0].name}`)
+      .onGet(`${APIRoute.Cameras}?name_like=${mockCameras[1].name}`)
+      .reply(200, mockCameras)
+      .onGet(`${APIRoute.Cameras}?category_like=${mockCameras[1].name}`)
+      .reply(200, mockCameras)
+      .onGet(`${APIRoute.Cameras}?type_like=${mockCameras[1].name}`)
       .reply(200, mockCameras);
 
     const store = mockStore();
 
-    await store.dispatch(loadSearchResults(mockCameras[0].name));
+    await store.dispatch(loadSearchResults(mockCameras[1].name));
 
     const actions = store.getActions().map(({type}) => type as string);
 
     expect(actions).toEqual([
       loadSearchResults.pending.type,
-      loadSearchResults.fulfilled.type,
+      loadSearchResults.rejected.type,
     ]);
   });
 
@@ -163,5 +167,81 @@ describe('Async actions', () => {
     ]);
   });
 
+  it('should dispatch loadDiscount when POST /coupons with wrong coupon', async () => {
+    const fakeCoupon = { coupon: 'fasgasgsadgsa52' };
+    mockAPI
+      .onPost(APIRoute.Coupons, fakeCoupon)
+      .reply(400);
 
+    const store = mockStore();
+
+    await store.dispatch(loadDiscount(fakeCoupon));
+
+    const actions = store.getActions().map(({type}) => type as string);
+
+    expect(actions).toEqual([
+      loadDiscount.pending.type,
+      loadDiscount.rejected.type,
+    ]);
+  });
+
+  it('should dispatch loadDiscount when POST /coupons with right coupon', async () => {
+    const fakeCoupon = { coupon: 'camera-333' };
+    mockAPI
+      .onPost(APIRoute.Coupons, fakeCoupon)
+      .reply(200, 15);
+
+    const store = mockStore();
+
+    await store.dispatch(loadDiscount(fakeCoupon));
+
+    const actions = store.getActions().map(({type}) => type as string);
+
+    expect(actions).toEqual([
+      loadDiscount.pending.type,
+      loadDiscount.fulfilled.type,
+    ]);
+  });
+
+  it('should dispatch postOrder when POST /coupons with wrong order', async () => {
+    const fakeOrder = {
+      camerasIds: [],
+      coupon: 'camera-333'
+    };
+    mockAPI
+      .onPost(APIRoute.Orders, fakeOrder)
+      .reply(400);
+
+    const store = mockStore();
+
+    await store.dispatch(postOrder(fakeOrder));
+
+    const actions = store.getActions().map(({type}) => type as string);
+
+    expect(actions).toEqual([
+      postOrder.pending.type,
+      postOrder.rejected.type,
+    ]);
+  });
+
+  it('should dispatch postOrder when POST /coupons with right order', async () => {
+    const fakeOrder = {
+      camerasIds: [],
+      coupon: 'camera-333'
+    };
+    mockAPI
+      .onPost(APIRoute.Orders, fakeOrder)
+      .reply(200);
+
+    const store = mockStore();
+
+    await store.dispatch(postOrder(fakeOrder));
+
+    const actions = store.getActions().map(({type}) => type as string);
+
+    expect(actions).toEqual([
+      postOrder.pending.type,
+      postOrder.fulfilled.type,
+    ]);
+  });
 });

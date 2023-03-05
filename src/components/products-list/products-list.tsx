@@ -8,6 +8,7 @@ import { selectFilters, selectParameters, selectPrice, selectSorting } from '../
 import { updateParameters } from '../../store/application/application.slice';
 import { selectAreCamerasLoading, selectCameras } from '../../store/cameras/cameras.selectors';
 import { Camera } from '../../types/camera';
+import { BasketModal } from '../basket-modal/basket-modal';
 import { ProductCard } from '../product-card/product-card';
 import { ProductModal } from '../product-modal/product-modal';
 
@@ -25,6 +26,7 @@ export const ProductsList = ({ pageNumber } : ProductsListProps) => {
   const price = useAppSelector(selectPrice);
   const [selectedProduct, setSelectedProduct] = useState<Camera | null>(null);
   const [productModalVisible, productModalToggle] = useModal();
+  const [basketModalVisible, basketModalToggle] = useModal();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const mounted = useRef(false);
@@ -84,7 +86,8 @@ export const ProductsList = ({ pageNumber } : ProductsListProps) => {
         )}
       </div>
 
-      <ProductModal product={selectedProduct} modalVisible={productModalVisible} onModalToggle={productModalToggle} onProductSelect={setSelectedProduct}/>
+      <ProductModal product={selectedProduct} modalVisible={productModalVisible} onModalToggle={productModalToggle} onProductSelect={setSelectedProduct} onModalClose={basketModalToggle}/>
+      <BasketModal modalVisible={basketModalVisible} onModalToggle={basketModalToggle}/>
     </React.Fragment>
   );
 };

@@ -10,17 +10,18 @@ type ProductModalProps = {
   modalVisible: boolean;
   onModalToggle: () => void;
   onProductSelect: Dispatch<Camera | null>;
+  onModalClose?: () => void;
 }
 
-export const ProductModal = ({ product, modalVisible, onModalToggle, onProductSelect } : ProductModalProps) => {
+export const ProductModal = ({ product, modalVisible, onModalToggle, onProductSelect, onModalClose } : ProductModalProps) => {
   const dispatch = useAppDispatch();
 
   const handleAddItemToBasket = () => {
     if (product) {
       dispatch(addToBasket(product));
     }
-    onProductSelect(null);
-    onModalToggle();
+    handleCloseModal();
+    onModalClose?.();
   };
 
   const handleCloseModal = () => {

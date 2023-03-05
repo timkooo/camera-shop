@@ -39,6 +39,9 @@ describe('Application Routing', () => {
         areCamerasLoading: false,
         camerasAmount: 40,
         searchResults: [],
+      },
+      [NameSpace.Basket]: {
+        basketItems: []
       }
     });
 
@@ -74,6 +77,9 @@ describe('Application Routing', () => {
         areCamerasLoading: false,
         camerasAmount: 40,
         searchResults: [],
+      },
+      [NameSpace.Basket]: {
+        basketItems: []
       }
     });
 
@@ -120,6 +126,9 @@ describe('Application Routing', () => {
         areCamerasLoading: false,
         camerasAmount: 40,
         searchResults: [],
+      },
+      [NameSpace.Basket]: {
+        basketItems: []
       }
     });
 
@@ -149,6 +158,9 @@ describe('Application Routing', () => {
       },
       [NameSpace.Reviews]: {
         reviews: makeFakeReviews(),
+      },
+      [NameSpace.Basket]: {
+        basketItems: []
       }
     });
 
@@ -181,6 +193,9 @@ describe('Application Routing', () => {
       },
       [NameSpace.Reviews]: {
         reviews: makeFakeReviews(),
+      },
+      [NameSpace.Basket]: {
+        basketItems: []
       }
     });
 

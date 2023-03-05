@@ -1,12 +1,14 @@
-import { FC } from 'react';
+import { FC, useEffect, useRef } from 'react';
+import { MAX_QUANTITY, MIN_QUANTITY } from '../../const';
 import { useAppDispatch } from '../../hooks/rtk-hooks';
-import { BasketItemType, decreaseQuantity, increaseQuantity, removeFromBasket } from '../../store/basket/basket.slice';
+import { addToBasket, BasketItemType, changeQuantity, decreaseQuantity, removeFromBasket } from '../../store/basket/basket.slice';
 
 type BasketItemProps = {
   item: BasketItemType;
 };
 
-export const BasketItem: FC<BasketItemProps> = ({ item }) => {
+export const BasketItem: FC<BasketItemProps> = ({ item } : BasketItemProps) => {
+  const quantityInput = useRef<HTMLInputElement | null>(null);
   const dispatch = useAppDispatch();
 
   const handleRemoveFromBasket = () => {
@@ -14,12 +16,31 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
   };
 
   const handleIncreaseQuantity = () => {
-    dispatch(increaseQuantity(item));
+    dispatch(addToBasket(item));
   };
 
   const handleDecreaseQuantity = () => {
     dispatch(decreaseQuantity(item));
   };
+
+  const handleChangeQuantity = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+    if (evt.key === 'Enter') {
+      if (quantityInput.current && quantityInput.current.value) {
+        const quantity = Number(quantityInput.current.value);
+        if (quantity < MIN_QUANTITY || quantity > MAX_QUANTITY) {
+          quantityInput.current.value = item.quantity.toString();
+          return;
+        }
+        dispatch(changeQuantity({...item, quantity : quantity, totalPrice: item.price * quantity}));
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (quantityInput.current && quantityInput.current.value) {
+      quantityInput.current.value = item.quantity.toString();
+    }
+  }, [item]);
 
   return (
     <li className="basket-item">
@@ -58,7 +79,7 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
           className="btn-icon btn-icon--prev"
           aria-label="уменьшить количество товара"
           onClick={handleDecreaseQuantity}
-          disabled={item.quantity === 1}
+          disabled={item.quantity === MIN_QUANTITY}
         >
           <svg width="7" height="12" aria-hidden="true">
             <use xlinkHref="#icon-arrow"></use>
@@ -66,10 +87,11 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
         </button>
         <label className="visually-hidden" htmlFor="counter1"></label>
         <input
+          ref={quantityInput}
           type="number"
           id="counter1"
-          defaultValue="1"
-          value={item.quantity}
+          defaultValue={item.quantity}
+          onKeyDown={handleChangeQuantity}
           min="1"
           max="99"
           aria-label="количество товара"
@@ -78,7 +100,7 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
           className="btn-icon btn-icon--next"
           aria-label="увеличить количество товара"
           onClick={handleIncreaseQuantity}
-          disabled={item.quantity === 99}
+          disabled={item.quantity === MAX_QUANTITY}
         >
           <svg width="7" height="12" aria-hidden="true">
             <use xlinkHref="#icon-arrow"></use>
@@ -86,7 +108,7 @@ export const BasketItem: FC<BasketItemProps> = ({ item }) => {
         </button>
       </div>
       <div className="basket-item__total-price">
-        <span className="visually-hidden">Общая цена:</span>{item.totalPrice}
+        <span className="visually-hidden">Общая цена:</span>{item.totalPrice.toLocaleString()}
       </div>
       <button
         className="cross-btn"

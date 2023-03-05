@@ -33,6 +33,9 @@ describe('Component: Catalog', () => {
         cameras: cameras,
         areCamerasLoading: false,
         camerasAmount: cameras.length,
+      },
+      [NameSpace.Basket]: {
+        basketItems: [],
       }
     });
 

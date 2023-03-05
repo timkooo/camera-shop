@@ -1,16 +1,22 @@
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import {render, screen} from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { makeFakeCamera } from '../../utils/mocks';
+import { makeFakeBasketItem, makeFakeCamera } from '../../utils/mocks';
 import { ProductCard } from './product-card';
 import { MemoryRouter } from 'react-router-dom';
+import { NameSpace } from '../../const';
 
 const mockStore = configureMockStore();
 
 describe('Component: ProductCard', () => {
   it('should render correctly', () => {
     const fakeCamera = makeFakeCamera();
-    const store = mockStore();
+    const fakeBasketItem = makeFakeBasketItem(fakeCamera, 2);
+    const store = mockStore({
+      [NameSpace.Basket] : {
+        basketItems: [ fakeBasketItem ],
+      }
+    });
     const handler = jest.fn();
 
     render(

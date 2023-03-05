@@ -23,6 +23,9 @@ describe('Component: Product', () => {
       },
       [NameSpace.Reviews]: {
         reviews: reviews,
+      },
+      [NameSpace.Basket]: {
+        basketItems: [],
       }
     });
 

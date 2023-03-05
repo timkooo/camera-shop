@@ -24,6 +24,7 @@ import { ProductModal } from '../../components/product-modal/product-modal';
 import { ReviewModal } from '../../components/review-modal/review-modal';
 import { SuccessModal } from '../../components/success-modal/success-modal';
 import './product.css';
+import { BasketModal } from '../../components/basket-modal/basket-modal';
 
 export const Product = () => {
   const { id } = useParams();
@@ -48,6 +49,7 @@ export const Product = () => {
   const [reviewModalVisible, reviewModalToggle] = useModal();
   const [successModalVisible, successModalToggle] = useModal();
   const [productModalVisible, productModalToggle] = useModal();
+  const [basketModalVisible, basketModalToggle] = useModal();
   const dispatch = useAppDispatch();
 
   const moveProductsRight = () => {
@@ -189,7 +191,7 @@ export const Product = () => {
                     <span className="visually-hidden">Цена:</span>
                     {camera.price.toLocaleString()} ₽
                   </p>
-                  <button className="btn btn--purple" type="button">
+                  <button className="btn btn--purple" type="button" onClick={() => handleProductSelection(camera)}>
                     <svg width="24" height="16" aria-hidden="true">
                       <use xlinkHref="#icon-add-basket"></use>
                     </svg>
@@ -334,7 +336,8 @@ export const Product = () => {
 
         <SuccessModal modalVisible={successModalVisible} onModalToggle={successModalToggle}/>
         <ReviewModal product={camera} modalVisible={reviewModalVisible} onModalToggle={reviewModalToggle} afterModalToggle={successModalToggle}/>
-        <ProductModal product={selectedProduct} modalVisible={productModalVisible} onModalToggle={productModalToggle} onProductSelect={setSelectedProduct}/>
+        <ProductModal product={selectedProduct} modalVisible={productModalVisible} onModalToggle={productModalToggle} onProductSelect={setSelectedProduct} onModalClose={basketModalToggle}/>
+        <BasketModal modalVisible={basketModalVisible} onModalToggle={basketModalToggle}/>
 
       </main>
       <a className="up-btn" href="#header">
