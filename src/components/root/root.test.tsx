@@ -10,6 +10,7 @@ import thunk from 'redux-thunk';
 
 const mockStore = configureMockStore([thunk]);
 const fakePromo = makeFakePromo();
+window.scrollTo = jest.fn();
 
 describe('Component: Root', () => {
   it('should render correctly', () => {

@@ -13,6 +13,7 @@ import { Catalog } from '../../pages/catalog/catalog';
 import { createMemoryHistory } from 'history';
 
 const mockStore = configureMockStore([thunk]);
+window.scrollTo = jest.fn();
 
 describe('Application Routing', () => {
 
@@ -173,7 +174,7 @@ describe('Application Routing', () => {
     expect(screen.getByText(/Похожие товары/i)).toBeInTheDocument();
   });
 
-  it('Should render "Busket" when user navigate to "/busket"', () => {
+  it('Should render "Basket" when user navigate to "/basket"', () => {
     const camera = makeFakeCamera();
 
     const router = createMemoryRouter(routesConfig, {

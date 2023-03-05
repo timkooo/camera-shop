@@ -1,18 +1,19 @@
 import { FC, useEffect, useRef } from 'react';
 import { MAX_QUANTITY, MIN_QUANTITY } from '../../const';
 import { useAppDispatch } from '../../hooks/rtk-hooks';
-import { addToBasket, BasketItemType, changeQuantity, decreaseQuantity, removeFromBasket } from '../../store/basket/basket.slice';
+import { addToBasket, BasketItemType, changeQuantity, decreaseQuantity } from '../../store/basket/basket.slice';
 
 type BasketItemProps = {
   item: BasketItemType;
+  onRemoveButtonClick: () => void;
 };
 
-export const BasketItem: FC<BasketItemProps> = ({ item } : BasketItemProps) => {
+export const BasketItem: FC<BasketItemProps> = ({ item, onRemoveButtonClick } : BasketItemProps) => {
   const quantityInput = useRef<HTMLInputElement | null>(null);
   const dispatch = useAppDispatch();
 
   const handleRemoveFromBasket = () => {
-    dispatch(removeFromBasket(item.id));
+    onRemoveButtonClick();
   };
 
   const handleIncreaseQuantity = () => {

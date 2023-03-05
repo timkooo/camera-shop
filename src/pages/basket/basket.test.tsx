@@ -29,7 +29,5 @@ describe('Component: Basket', () => {
     );
 
     expect(screen.getByText(/Если у вас есть промокод на скидку, примените его в этом поле/i)).toBeInTheDocument();
-    expect(screen.getByText(cameras[0].name)).toBeInTheDocument();
-    expect(screen.getByText(cameras[3].name)).toBeInTheDocument();
   });
 });

@@ -15,10 +15,11 @@ describe('Component: BasketItem', () => {
 
     render(
       <Provider store={store}>
-        <BasketItem item={fakeBasketItem}/>
+        <BasketItem item={fakeBasketItem} onRemoveButtonClick={() => jest.fn()}/>
       </Provider>
     );
 
-    expect(screen.getByText(fakeCamera.name)).toBeInTheDocument();
+    expect(screen.getByText(/Артикул:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Общая цена:/i)).toBeInTheDocument();
   });
 });

@@ -3,11 +3,13 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BasketItem } from '../../components/basket-item/basket-item';
 import { OrderModal } from '../../components/order-modal/order-modal';
+import { RemoveModal } from '../../components/remove-modal/remove-modal';
 import { AppRoutes, ERROR_SHOW_TIME, WRONG_DATA_CODE_ERROR } from '../../const';
 import { useAppDispatch, useAppSelector } from '../../hooks/rtk-hooks';
 import { useModal } from '../../hooks/use-modal';
 import { loadDiscount, postOrder } from '../../store/api-actions';
 import { selectBasketItems, selectBasketPrice, selectDiscountPrice, selectFinalPrice } from '../../store/basket/basket.selectors';
+import { BasketItemType } from '../../store/basket/basket.slice';
 
 export const Basket = () => {
   const basketItems = useAppSelector(selectBasketItems);
@@ -18,6 +20,8 @@ export const Basket = () => {
   const couponInput = useRef<HTMLInputElement | null>(null);
   const [isCouponValid, setIsCouponValid] = useState<boolean | null>(null);
   const [orderModalVisible, orderModalToggle] = useModal();
+  const [removeModalVisible, removeModalToggle] = useModal();
+  const [itemToRemove, setItemToRemove] = useState<BasketItemType | null>(null);
   const dispatch = useAppDispatch();
   const reg = RegExp('^\\b\\S+\\b$');
 
@@ -65,6 +69,11 @@ export const Basket = () => {
   })();
   };
 
+  const handleRemoveFromBasket = (item: BasketItemType) => {
+    setItemToRemove(item);
+    removeModalToggle();
+  };
+
   return (
     <main>
       <div className="page-content">
@@ -104,7 +113,7 @@ export const Basket = () => {
             ) : (
               <ul className="basket__list">
                 {basketItems.map((item) => (
-                  <BasketItem key={item.id} item={item} />
+                  <BasketItem key={item.id} item={item} onRemoveButtonClick={() => handleRemoveFromBasket(item)} />
                 ))}
               </ul>
             )}
@@ -138,12 +147,12 @@ export const Basket = () => {
               <div className="basket__summary-order">
                 <p className="basket__summary-item">
                   <span className="basket__summary-text">Всего:</span>
-                  <span className="basket__summary-value">{basketPrice.toLocaleString()} ₽</span>
+                  <span className="basket__summary-value">{basketPrice ? basketPrice.toLocaleString() : basketPrice} ₽</span>
                 </p>
                 <p className="basket__summary-item">
                   <span className="basket__summary-text">Скидка:</span>
-                  <span className="basket__summary-value basket__summary-value--bonus">
-                    {discount.toLocaleString()} ₽
+                  <span className={classNames('basket__summary-value', {'basket__summary-value--bonus': discount})}>
+                    {discount ? discount.toLocaleString() : discount} ₽
                   </span>
                 </p>
                 <p className="basket__summary-item">
@@ -164,6 +173,7 @@ export const Basket = () => {
       </div>
 
       <OrderModal modalVisible={orderModalVisible} onModalToggle={orderModalToggle}/>
+      <RemoveModal item={itemToRemove} modalVisible={removeModalVisible} onModalToggle={removeModalToggle} onItemRemove={setItemToRemove}/>
     </main>
   );
 };
