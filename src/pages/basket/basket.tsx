@@ -163,7 +163,7 @@ export const Basket = () => {
                     {finalPrice.toLocaleString()} ₽
                   </span>
                 </p>
-                <button className="btn btn--purple" type="submit" onClick={handlePostOrder}>
+                <button className="btn btn--purple" type="submit" onClick={handlePostOrder} disabled={basketItems.length === 0}>
                   Оформить заказ
                 </button>
               </div>

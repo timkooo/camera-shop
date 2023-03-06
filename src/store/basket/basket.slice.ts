@@ -80,12 +80,6 @@ export const basketSlice = createSlice({
         state.basketPrice = 0;
         state.basketQuantity = 0;
         state.discount = 0;
-      })
-      .addCase(postOrder.rejected, (state) => {
-        state.basketItems = [];
-        state.basketPrice = 0;
-        state.basketQuantity = 0;
-        state.discount = 0;
       });
   }
 });
