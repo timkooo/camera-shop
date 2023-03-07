@@ -10,6 +10,7 @@ type BasketItemProps = {
 
 export const BasketItem: FC<BasketItemProps> = ({ item, onRemoveButtonClick } : BasketItemProps) => {
   const quantityInput = useRef<HTMLInputElement | null>(null);
+  const previousValue = useRef<number>(0);
   const dispatch = useAppDispatch();
 
   const handleRemoveFromBasket = () => {
@@ -26,14 +27,34 @@ export const BasketItem: FC<BasketItemProps> = ({ item, onRemoveButtonClick } : 
 
   const handleChangeQuantity = (evt: React.KeyboardEvent<HTMLInputElement>) => {
     if (evt.key === 'Enter') {
-      if (quantityInput.current && quantityInput.current.value) {
-        const quantity = Number(quantityInput.current.value);
+      if (quantityInput.current) {
+        let quantity = 0;
+        if (quantityInput.current.value === '') {
+          quantity = MIN_QUANTITY;
+          quantityInput.current.value = MIN_QUANTITY.toString();
+        } else {
+          quantity = Number(quantityInput.current.value);
+        }
         if (quantity < MIN_QUANTITY || quantity > MAX_QUANTITY) {
           quantityInput.current.value = item.quantity.toString();
           return;
         }
+
         dispatch(changeQuantity({...item, quantity : quantity, totalPrice: item.price * quantity}));
       }
+    }
+  };
+
+  const handleQuantityInput = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (quantityInput.current && quantityInput.current.value) {
+      if (Number(evt.target.value) > MAX_QUANTITY) {
+        quantityInput.current.value = previousValue.current.toString();
+      }
+      if (Number(evt.target.value) < MIN_QUANTITY) {
+        quantityInput.current.value = '';
+      }
+      quantityInput.current.value = evt.target.value;
+      previousValue.current = Number(evt.target.value);
     }
   };
 
@@ -41,6 +62,10 @@ export const BasketItem: FC<BasketItemProps> = ({ item, onRemoveButtonClick } : 
     if (quantityInput.current && quantityInput.current.value) {
       quantityInput.current.value = item.quantity.toString();
     }
+  }, [item]);
+
+  useEffect(() => {
+    previousValue.current = item.quantity;
   }, [item]);
 
   return (
@@ -93,6 +118,7 @@ export const BasketItem: FC<BasketItemProps> = ({ item, onRemoveButtonClick } : 
           id="counter1"
           defaultValue={item.quantity}
           onKeyDown={handleChangeQuantity}
+          onChange={handleQuantityInput}
           min="1"
           max="99"
           aria-label="количество товара"
