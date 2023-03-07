@@ -58,6 +58,12 @@ export const BasketItem: FC<BasketItemProps> = ({ item, onRemoveButtonClick } : 
     }
   };
 
+  const handleQuantityOnBlur = () => {
+    if (quantityInput.current) {
+      quantityInput.current.value = item.quantity.toString();
+    }
+  };
+
   useEffect(() => {
     if (quantityInput.current && quantityInput.current.value) {
       quantityInput.current.value = item.quantity.toString();
@@ -119,6 +125,7 @@ export const BasketItem: FC<BasketItemProps> = ({ item, onRemoveButtonClick } : 
           defaultValue={item.quantity}
           onKeyDown={handleChangeQuantity}
           onChange={handleQuantityInput}
+          onBlur={handleQuantityOnBlur}
           min="1"
           max="99"
           aria-label="количество товара"
